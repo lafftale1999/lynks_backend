@@ -1,0 +1,7 @@
+server/build
+server/secret
+
+janus_webrtc/build
+janus_webrtc/secret
+
+.vscode
