@@ -1,11 +1,8 @@
 FROM alpine
 
-RUN echo hello world
+COPY dependencies.sh /usr/local/bin/dependencies.sh
+RUN chmod +x /usr/local/bin/dependencies.sh
 
-RUN apk update
-
-RUN apk add gcc
+RUN /usr/local/bin/dependencies.sh
 
 CMD ["sh"]
-
-# Follow janus-webrtc requirements for videoroom
