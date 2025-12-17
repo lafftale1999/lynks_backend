@@ -21,7 +21,11 @@ openssl-dev
 libsrtp-dev
 libusrsctp-dev
 libmicrohttpd-dev
-libwebsockets
+libwebsockets-dev
+autoconf-archive
+automake
+m4
+libtool
 "
 
 echo "installing dependencies"
