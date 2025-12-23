@@ -9,6 +9,9 @@ apk update
 # all dependencies needed for the project.
 PACKAGES="
 python3
+build-base
+linux-headers
+make
 cmake
 git
 glib-dev

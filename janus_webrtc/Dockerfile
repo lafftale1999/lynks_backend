@@ -11,5 +11,10 @@ RUN git clone https://github.com/meetecho/janus-gateway.git
 WORKDIR /home/janus-gateway
 
 RUN ./autogen.sh
+RUN ./configure --prefix=/opt/janus
+RUN make
+RUN make install
 
-CMD ["sh"]
+RUN make configs
+
+CMD ["/opt/janus/bin/janus"]
