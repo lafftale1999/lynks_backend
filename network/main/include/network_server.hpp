@@ -88,7 +88,7 @@ namespace lynks {
 
                 virtual void on_request(std::shared_ptr<connection> client, message_handle<http_request>& request) {
                     if (client->is_connected()) {
-                        auto raw_response = lynks::network::router::route_request(request.data);
+                        auto raw_response = lynks::network::router::handle_request(request.data);
                         message_handle<http_response> response = {raw_response};
                         client->send_response(response);
                     } else {
@@ -97,7 +97,8 @@ namespace lynks {
                         connected_clients.erase(std::remove(connected_clients.begin(), connected_clients.end(), client), connected_clients.end());
                     }
                 }
-
+            
+            private:
                 std::deque<std::shared_ptr<connection>> connected_clients;
                 lynks::network::queue<lynks::network::owned_message_handle<http_request>> requests;
                 boost::asio::io_context context;

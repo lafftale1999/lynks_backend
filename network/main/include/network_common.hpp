@@ -23,6 +23,7 @@
 namespace http = boost::beast::http;
 using http_request = http::request<http::string_body>;
 using http_response = http::response<http::string_body>;
+
 namespace asio = boost::asio;
 
 #endif

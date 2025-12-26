@@ -1,5 +1,5 @@
-server/build
-server/secret
+network/build
+network/secret
 
 janus_webrtc/build
 janus_webrtc/secret

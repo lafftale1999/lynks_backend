@@ -1,3 +1,0 @@
-C:/Users/prett/Desktop/projects/examensarbete/lynks_backend/network/build/CMakeFiles/lynks_backend.dir
-C:/Users/prett/Desktop/projects/examensarbete/lynks_backend/network/build/CMakeFiles/edit_cache.dir
-C:/Users/prett/Desktop/projects/examensarbete/lynks_backend/network/build/CMakeFiles/rebuild_cache.dir

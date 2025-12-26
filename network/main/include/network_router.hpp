@@ -2,6 +2,7 @@
 #define NETWORK_ROUTER_HPP_
 
 #include "network_common.hpp"
+#include "user_service.hpp"
 
 namespace lynks {
     namespace network {
@@ -9,22 +10,36 @@ namespace lynks {
         Class for routing incoming requests.
         */
         class router {
-            public:
+            private:
                 static http_response route_request(const http_request& request) {
                     auto path = request.target();
-                    std::cout << "[ROUTER] " << path << std::endl;
                     http_response response = {};
 
                     if (path == "/create") {
-                        response = handle_request(request);
+
+                    } else if (path == "/join") {
+
+                    } else if (path == "/leave") {
+
                     } else {
-                        response = not_found(request);
+
                     }
 
                     return response;
                 }
 
+                static http_response create_session(const http_request& request) {
+                    // TODO: auto db_connection = lynks::network::mysql::get_connection();
+                    // TODO: lynks::network::user user(request.body());
+                    // TODO: return db_connection.create_session(user);
+                }
+            
+            public:
                 static http_response handle_request(const http_request& request) {
+                    return route_request(request);
+                }
+
+                /* static http_response create_session(const http_request& request) {
                     http::response<http::string_body> response;
                     response.version(request.version());
                     response.result(http::status::ok);
@@ -46,7 +61,7 @@ namespace lynks {
                     response.prepare_payload();
 
                     return response;
-                }
+                } */
         };
     } // network
 } // lynks
