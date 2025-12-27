@@ -10,7 +10,7 @@
 
 namespace lynks::network {
 
-    static const std::regex username_validation("[a-zA-Z\d]");
+    static const std::regex username_validation(R"(^[a-zA-Z\d_]{3,20}$)");
 
     /* 
     --------------------------- CONSTRUCTORS --------------------------------------
@@ -92,7 +92,7 @@ namespace lynks::network {
     /* 
     --------------------------- PRIVATE MEMBER FUNCTIONS --------------------------------------
     */
-    volatile void user::validate_user() {
+    void user::validate_user() {
         if (id < 0) 
             throw std::invalid_argument("ID can't be less than 0");
         if (username.empty() || 
@@ -102,7 +102,7 @@ namespace lynks::network {
             throw std::invalid_argument("Password does not have correct format");
     }
 
-    volatile void user::hash_password() {
+    void user::hash_password() {
         password = crypto::hash256(password);
     }
 }

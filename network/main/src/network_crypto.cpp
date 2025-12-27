@@ -15,7 +15,7 @@ namespace lynks::network {
 
         std::stringstream ss;
 
-        for(uint8_t i = 0; i < SHA_DIGEST_LENGTH; i++) {
+        for(uint8_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
             ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>( hash[i] );
         }
 

@@ -33,7 +33,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     C:/dev/cpp_external_libs/nlohmann/include
 )
 
-# ---- Build Boost.Charconv from source (fixar undefined reference) ----
+# ---- Build Boost.Charconv from source ----
 add_library(boost_charconv STATIC
     C:/dev/boost/libs/charconv/src/from_chars.cpp
     C:/dev/boost/libs/charconv/src/to_chars.cpp

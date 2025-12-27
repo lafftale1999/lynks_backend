@@ -3,10 +3,13 @@
 namespace lynks::network {
     mysql::pool_params db_connection::get_params() {
         mysql::pool_params params;
-        params.server_address.emplace_host_and_port(std::string(hostname));
-        params.database = std::string(database);
-        params.username = std::string (username);
-        params.password = std::string(password);
+        params.server_address.emplace_host_and_port(
+            std::string(MYSQL_HOST),
+            MYSQL_PORT
+        );
+        params.database = MYSQL_DBNAME;
+        params.username = MYSQL_USERNAME;
+        params.password = MYSQL_PASSWORD;
         params.thread_safe = true;
 
         return params;
@@ -25,41 +28,108 @@ namespace lynks::network {
     /* 
     --------------------------- PRIVATE MEMBER FUNCTIONS --------------------------------------
     */
+    static void print_field(const mysql::field_view& f);
 
     asio::awaitable<std::optional<mysql::results>> db_connection::send_query_impl(
         std::string_view sql,
         mysql::field_view const* params,
         std::size_t params_size
     ) {
-        // fetch a connection from the connection_pool
+        std::cout << "Incoming arguments:\n";
+        std::cout << "SQL: " << sql << std::endl;
+        std::cout << "Params (" << params_size << "):\n";
+        for (std::size_t i = 0; i < params_size; ++i) {
+            std::cout << "  [" << i << "] = ";
+            print_field(params[i]);
+            std::cout << "\n";
+        }
         boost::system::error_code ec;
-        mysql::pooled_connection connection = co_await connection_pool.async_get_connection(
-            asio::redirect_error(asio::use_awaitable, ec)
-        );
-        if (ec) co_return std::nullopt;
-
-        // prepare statement
-        mysql::statement statement = co_await connection->async_prepare_statement(
-            sql,
-            asio::redirect_error(asio::use_awaitable, ec)
-        );
-        if (ec) co_return std::nullopt;
-
-        // execute the query
-        mysql::results result;
         auto token = asio::cancel_after(
             std::chrono::seconds(5),
             asio::redirect_error(asio::use_awaitable, ec)
         );
-        
+
+        std::cout << "[SERVER] Fetching connection\n";
+        // fetch a connection from the connection_pool
+        mysql::pooled_connection connection = co_await connection_pool.async_get_connection(
+            token
+        );
+        if (ec) {
+            std::cerr << "[SERVER] Fetching connection failed: " << ec.message() << std::endl;
+            co_return std::nullopt;
+        }
+
+        std::cout << "[SERVER] Preparing statement\n";
+        // prepare statement
+        mysql::statement statement = co_await connection->async_prepare_statement(
+            sql,
+            token
+        );
+        if (ec) {
+            std::cerr << "[SERVER] Preparing statement failed: " << ec.message() << std::endl;
+            co_return std::nullopt;
+        }
+
+        std::cout << "[SERVER] Executing query\n";
+        // execute the query
+        mysql::results result;
         co_await connection->async_execute(
             statement.bind(params, params + params_size),
             result,
             token
         );
 
-        if (ec) co_return std::nullopt;
+        if (ec) {
+            std::cerr << "[SERVER] Executing query failed: " << ec.message() << std::endl;
+            co_return std::nullopt;
+        }
+
+        std::cout << "[SERVER] Query Executed\n";
 
         co_return result;
+    }
+
+    static void print_field(const mysql::field_view& f){
+    using mysql::field_kind;
+
+    switch (f.kind()) {
+        case field_kind::null:
+            std::cout << "NULL";
+            break;
+
+        case field_kind::int64:
+            std::cout << f.as_int64();
+            break;
+
+        case field_kind::uint64:
+            std::cout << f.as_uint64();
+            break;
+
+        case field_kind::float_:
+            std::cout << f.as_float();
+            break;
+
+        case field_kind::double_:
+            std::cout << f.as_double();
+            break;
+
+        case field_kind::string:
+            std::cout << '"' << f.as_string() << '"';
+            break;
+
+        case field_kind::blob:
+            std::cout << "<blob>(" << f.as_blob().size() << " bytes)";
+            break;
+
+        case field_kind::date:
+        case field_kind::datetime:
+        case field_kind::time:
+            std::cout << f; // Boost har operator<< för dessa
+            break;
+
+        default:
+            std::cout << "<unknown>";
+            break;
+        }
     }
 }

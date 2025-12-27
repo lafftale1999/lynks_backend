@@ -60,7 +60,7 @@ namespace lynks {
                                     connected_clients.back()->connect_to_client(id_counter++);
                                     std::cout << "[" << connected_clients.back()->get_id() << "] has connected succesfully\n";
                                 } else {
-                                    std::cout << "[SERVER] connection denied\n";
+                                    std::cerr << "[SERVER] connection denied\n";
                                 }
                             } else {
                                 std::cerr << "[SERVER] New connection error: " << ec.message() << std::endl;
@@ -99,6 +99,7 @@ namespace lynks {
                             [this, client_keepalive, _request]() -> asio::awaitable<void> {
                                 http_response raw_response = co_await router.handle_request(_request);
                                 message_handle<http_response> response{raw_response};
+                                client_keepalive->send_response(response);
                                 co_return;
                             },
                             [client_keepalive](std::exception_ptr ptr){
@@ -111,7 +112,7 @@ namespace lynks {
                                 }
                             }
                         );
-                        
+
                     } else {
                         on_client_disconnect(client);
                         client.reset();

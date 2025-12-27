@@ -41,13 +41,13 @@ namespace lynks {
                 /* 
                 Hashes the password using OpenSSL SHA256 method. Will hash the field <password> of the object.
                 */
-                volatile void hash_password();
+                virtual void hash_password();
 
                 /* 
                 Validates the objects fields. Throws an std::invalid_argument exception if the objects doesn't
                 pass the assigned parameters.
                 */
-                volatile void validate_user();
+                virtual void validate_user();
 
             private:
                 int64_t id;

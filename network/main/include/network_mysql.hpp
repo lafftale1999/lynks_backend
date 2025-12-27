@@ -77,10 +77,7 @@ namespace lynks {
                 the db_connections `connection_pool`.
                 */
                 static mysql::pool_params get_params();
-                static constexpr std::string_view hostname = MYSQL_HOSTNAME;
-                static constexpr std::string_view database = MYSQL_DBNAME;
-                static constexpr std::string_view username = MYSQL_USERNAME;
-                static constexpr std::string_view password = MYSQL_PASSWORD;
+                
                 static constexpr uint8_t MAX_RECONNECT_TRIES = 5;
         };
     }

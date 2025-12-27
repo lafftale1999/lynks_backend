@@ -14,7 +14,7 @@ namespace lynks::network {
 
     asio::awaitable<std::optional<user>> user_repository::find_user_by_id(const uint32_t id) {
         auto result = co_await db.send_query(
-            "SELECT * FROM `users` WHERE user.id = ?",
+            "SELECT * FROM `users` WHERE users.id = ?",
             id
         );
 
@@ -25,7 +25,7 @@ namespace lynks::network {
 
     asio::awaitable<std::optional<user>> user_repository::find_user_by_username(const std::string& username) {
         auto result = co_await db.send_query(
-            "SELECT * FROM `users` WHERE user.username = ?",
+            "SELECT * FROM `users` WHERE users.username = ?",
             username
         );
 
