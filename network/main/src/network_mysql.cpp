@@ -23,22 +23,10 @@ namespace lynks::network {
     }
 
     /* 
-    --------------------------- PUBLIC MEMBER FUNCTIONS --------------------------------------
-    */
-
-    template<class... Params>
-    asio::awaitable<std::optional<mysql::results>> db_connection::send_query(
-        std::string_view sql, Params&&... params
-    ) {
-        mysql::field_view arr[] = { mysql::field_view(params)... };
-        co_return co_await send_query(sql, arr, sizeof...(Params));
-    }
-
-    /* 
     --------------------------- PRIVATE MEMBER FUNCTIONS --------------------------------------
     */
 
-    asio::awaitable<std::optional<mysql::results>> db_connection::send_query(
+    asio::awaitable<std::optional<mysql::results>> db_connection::send_query_impl(
         std::string_view sql,
         mysql::field_view const* params,
         std::size_t params_size

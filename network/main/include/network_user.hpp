@@ -10,7 +10,12 @@ namespace lynks {
                 user() = default;
 
                 /* 
-                Parses a json string into an user-object.
+                Parses a json string into an user-object. Assumed that this is used to handle client requests,
+                therefore not handling the key for field `id` and just setting it to `0`.
+
+                This will hash the `password` in the process.
+
+                @param json_string containing `username` and `password`
                 */
                 user(std::string json_string);
 
@@ -23,12 +28,12 @@ namespace lynks {
                 Takes in all parameters for the user field. This user is constructed from the DB and therefore
                 should the password be hashed at receival.
                 */
-                user(uint32_t id, std::string _username, std::string _password);
+                user(int64_t id, std::string _username, std::string _password);
 
                 std::optional<std::string> to_json();
                 std::string to_string() const;
 
-                uint32_t get_id() const;
+                int64_t get_id() const;
                 const std::string& get_username() const;
                 const std::string& get_password() const;
 
@@ -45,7 +50,7 @@ namespace lynks {
                 volatile void validate_user();
 
             private:
-                uint32_t id;
+                int64_t id;
                 std::string username;
                 std::string password;
         };

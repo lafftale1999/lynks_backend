@@ -4,13 +4,16 @@
 #include "network_common.hpp"
 #include "network_connection.hpp"
 #include "network_router.hpp"
+#include "user_service.hpp"
 
 namespace lynks {
     namespace network {
         class server_interface {
             public:
-                server_interface(uint16_t port)
-                : acceptor(context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {
+                server_interface(uint16_t port) : 
+                    acceptor(context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+                    _db_connection(context), router(_db_connection)
+                {
 
                 }
 
@@ -88,9 +91,27 @@ namespace lynks {
 
                 virtual void on_request(std::shared_ptr<connection> client, message_handle<http_request>& request) {
                     if (client->is_connected()) {
-                        auto raw_response = lynks::network::router::handle_request(request.data);
-                        message_handle<http_response> response = {raw_response};
-                        client->send_response(response);
+                        auto _request = request.data;
+                        auto client_keepalive = client;
+                        
+                        asio::co_spawn(
+                            context,
+                            [this, client_keepalive, _request]() -> asio::awaitable<void> {
+                                http_response raw_response = co_await router.handle_request(_request);
+                                message_handle<http_response> response{raw_response};
+                                co_return;
+                            },
+                            [client_keepalive](std::exception_ptr ptr){
+                                if (ptr) {
+                                    try {
+                                        std::rethrow_exception(ptr);
+                                    } catch (const std::exception& e) {
+                                        std::cerr << "[SERVER] handled exception: " << e.what() << std::endl;
+                                    }
+                                }
+                            }
+                        );
+                        
                     } else {
                         on_client_disconnect(client);
                         client.reset();
@@ -104,6 +125,10 @@ namespace lynks {
                 boost::asio::io_context context;
                 std::thread context_thread;
                 boost::asio::ip::tcp::acceptor acceptor;
+
+                lynks::network::db_connection _db_connection;
+                lynks::network::router router;
+
                 uint32_t id_counter = 10000;
         };
     } // network

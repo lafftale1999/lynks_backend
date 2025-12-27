@@ -1,3 +1,7 @@
+//
+// network_user.cpp
+//
+
 #include "network_user.hpp"
 #include "network_crypto.hpp"
 
@@ -11,14 +15,16 @@ namespace lynks::network {
     /* 
     --------------------------- CONSTRUCTORS --------------------------------------
     */
-   
+
     user::user(std::string json_string) {
         
         try {
             auto json = nlohmann::json::parse(json_string);
-            id = json["user"]["id"].get<uint32_t>();
-            username = json["user"]["username"].get<std::string>();
-            password = json["user"]["password"].get<std::string>();
+            id = 0;
+            username = json["users"]["username"].get<std::string>();
+            password = json["users"]["password"].get<std::string>();
+
+            hash_password();
             validate_user();
         } catch (const std::exception& e) {
             std::cerr << 
@@ -35,7 +41,7 @@ namespace lynks::network {
         validate_user();
     }
 
-    user::user(uint32_t id, std::string _username, std::string _password) 
+    user::user(int64_t id, std::string _username, std::string _password) 
     : id(id), username(std::move(_username)), password(std::move(_password))
     {
         validate_user();   
@@ -47,9 +53,9 @@ namespace lynks::network {
     std::optional<std::string> user::to_json() {
         try {
             nlohmann::json json;
-            json["user"]["id"] = id;
-            json["user"]["username"] = username;
-            json["user"]["password"] = password;
+            json["users"]["id"] = id;
+            json["users"]["username"] = username;
+            json["users"]["password"] = password;
             return json.dump();
         } catch (const std::exception& e) {
             std::cerr << 
@@ -71,7 +77,7 @@ namespace lynks::network {
         return ss.str();
     }
 
-    uint32_t user::get_id() const {
+    int64_t user::get_id() const {
         return id;
     }
 

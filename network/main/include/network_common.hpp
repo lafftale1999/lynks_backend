@@ -14,6 +14,8 @@
 #include <cmath>
 #include <map>
 
+#define BOOST_CHARCONV_HEADER_ONLY
+
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/core.hpp>

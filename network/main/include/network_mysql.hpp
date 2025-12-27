@@ -41,7 +41,10 @@ namespace lynks {
                 template<class... Params>
                 asio::awaitable<std::optional<mysql::results>> send_query(
                     std::string_view sql, Params&&... params
-                );
+                ) {
+                    mysql::field_view arr[] = { mysql::field_view(params)... };
+                    co_return co_await send_query_impl(sql, arr, sizeof...(Params));
+                }
             
             protected:
                 /* 
@@ -56,7 +59,7 @@ namespace lynks {
                 @return std::optional with the result of the query. If the query failed the 
                 returned object will be of type `std::nullopt`. 
                 */
-                asio::awaitable<std::optional<mysql::results>> send_query(
+                asio::awaitable<std::optional<mysql::results>> send_query_impl(
                     std::string_view sql,
                     mysql::field_view const* params,
                     std::size_t params_size
