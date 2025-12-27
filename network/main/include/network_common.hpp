@@ -28,4 +28,6 @@ using http_response = http::response<http::string_body>;
 
 namespace asio = boost::asio;
 
+#define LYNKS_BACKEND_DEBUG
+
 #endif

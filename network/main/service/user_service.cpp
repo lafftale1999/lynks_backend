@@ -11,10 +11,8 @@ namespace lynks::network {
 
         if (!result) co_return std::nullopt;
 
-        
-
         auto& fetched_user = *result;
-        std::cout << "[SERVER] user found:\n" << fetched_user.to_string();
+
         if (!(temp.get_password() == fetched_user.get_password())) {
             co_return std::nullopt;
         }

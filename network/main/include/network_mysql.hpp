@@ -77,8 +77,16 @@ namespace lynks {
                 the db_connections `connection_pool`.
                 */
                 static mysql::pool_params get_params();
-                
                 static constexpr uint8_t MAX_RECONNECT_TRIES = 5;
+                
+                /* 
+                Used for printing debugging messages for queries to be sent to the database.
+                */
+                static void debug_incoming_query(
+                    std::string_view sql,
+                    mysql::field_view const* params,
+                    std::size_t params_size
+                );
         };
     }
 }

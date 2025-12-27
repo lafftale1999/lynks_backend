@@ -35,14 +35,10 @@ namespace lynks::network {
         mysql::field_view const* params,
         std::size_t params_size
     ) {
-        std::cout << "Incoming arguments:\n";
-        std::cout << "SQL: " << sql << std::endl;
-        std::cout << "Params (" << params_size << "):\n";
-        for (std::size_t i = 0; i < params_size; ++i) {
-            std::cout << "  [" << i << "] = ";
-            print_field(params[i]);
-            std::cout << "\n";
-        }
+        #ifdef LYNKS_BACKEND_DEBUG 
+            debug_incoming_query(sql, params, params_size);
+        #endif
+        
         boost::system::error_code ec;
         auto token = asio::cancel_after(
             std::chrono::seconds(5),
@@ -130,6 +126,22 @@ namespace lynks::network {
         default:
             std::cout << "<unknown>";
             break;
+        }
+    }
+
+    void db_connection::debug_incoming_query(
+        std::string_view sql,
+        mysql::field_view const* params,
+        std::size_t params_size
+    ) {
+        std::cout << "Incoming arguments:\n";
+        std::cout << "SQL: " << sql << std::endl;
+        std::cout << "Params (" << params_size << "):\n";
+        
+        for (std::size_t i = 0; i < params_size; ++i) {
+            std::cout << "  [" << i << "] = ";
+            print_field(params[i]);
+            std::cout << "\n";
         }
     }
 }

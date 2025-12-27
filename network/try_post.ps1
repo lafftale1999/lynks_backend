@@ -1,6 +1,6 @@
 $body = @{
   users = @{
-    username = "testuser"
+    username = "testus"
     password = "test123"
   }
 } | ConvertTo-Json -Depth 5
