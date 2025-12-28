@@ -25,7 +25,9 @@ namespace lynks {
                 : socket(std::move(socket)), context(context), requests(requests) 
                 {}
                 
-                virtual ~connection() {}
+                virtual ~connection() {
+                    disconnect();
+                }
 
                 /**
                  * @brief Checks if the client is connected and calls `read_request()`.
