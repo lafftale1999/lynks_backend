@@ -2,6 +2,7 @@
 #define NETWORK_ROUTER_HPP_
 
 #include "network_common.hpp"
+#include "user_service.hpp"
 
 namespace lynks {
     namespace network {
@@ -10,33 +11,69 @@ namespace lynks {
         */
         class router {
             public:
-                static http_response route_request(const http_request& request) {
-                    auto path = request.target();
-                    std::cout << "[ROUTER] " << path << std::endl;
-                    http_response response = {};
+                router(db_connection& db)
+                : _user_service(db) {}
 
-                    if (path == "/create") {
-                        response = handle_request(request);
+                asio::awaitable<http_response> handle_request(const http_request& request) {
+                    return route_request(request);
+                }
+            
+            private:
+                asio::awaitable<http_response> route_request(const http_request& request) {
+                    auto path = request.target();
+
+                    if (path == "/login") {
+                        co_return co_await login_user(request);
+                    } else if (path == "/create") {
+                        co_return co_await create_meeting(request);
+                    } else if (path == "/join") {
+
+                    } else if (path == "/leave") {
+
                     } else {
-                        response = not_found(request);
+
                     }
 
-                    return response;
+                    co_return not_found(request);
                 }
 
-                static http_response handle_request(const http_request& request) {
+                asio::awaitable<http_response> login_user(const http_request& request) {
+                    auto result_string = co_await _user_service.log_in_user(request.body());
+
+                    if (!result_string) co_return bad_request(request);
+
+                    co_return succesful_request(request, *result_string);
+                }
+
+                asio::awaitable<http_response> create_meeting(const http_request& request) {
+                    try {
+                        auto token = request.at(http::field::authorization);
+
+                        auto result_string = co_await _user_service.create_meeting(token);
+                        
+                        if (!result_string) co_return bad_request(request);
+
+                        co_return succesful_request(request, *result_string);
+                    } catch (const std::exception& e) {
+                        std::cerr << "[SERVER] authorization header not found\n";
+                    }
+
+                    co_return bad_request(request);
+                }
+
+                http_response succesful_request(const http_request& request, const std::string& body) {
                     http::response<http::string_body> response;
                     response.version(request.version());
                     response.result(http::status::ok);
                     response.set(http::field::server, "My HTTP Server");
-                    response.set(http::field::content_type, "text/plain");
-                    response.body() = "Hello, World!";
+                    response.set(http::field::content_type, "application/json");
+                    response.body() = body;
                     response.prepare_payload();
 
                     return response;
                 }
 
-                static http_response not_found(const http_request& request) {
+                http_response not_found(const http_request& request) {
                     http::response<http::string_body> response;
                     response.version(request.version());
                     response.result(http::status::not_found);
@@ -47,6 +84,20 @@ namespace lynks {
 
                     return response;
                 }
+
+                http_response bad_request(const http_request& request) {
+                    http::response<http::string_body> response;
+                    response.version(request.version());
+                    response.result(http::status::bad_request);
+                    response.set(http::field::server, "My HTTP Server");
+                    response.set(http::field::content_type, "text/plain");
+                    response.body() = "400 bad request";
+                    response.prepare_payload();
+
+                    return response;
+                } 
+            
+                user_service _user_service;
         };
     } // network
 } // lynks

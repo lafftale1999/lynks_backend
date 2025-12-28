@@ -14,6 +14,8 @@
 #include <cmath>
 #include <map>
 
+#define BOOST_CHARCONV_HEADER_ONLY
+
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/core.hpp>
@@ -23,6 +25,9 @@
 namespace http = boost::beast::http;
 using http_request = http::request<http::string_body>;
 using http_response = http::response<http::string_body>;
+
 namespace asio = boost::asio;
+
+#define LYNKS_BACKEND_DEBUG
 
 #endif

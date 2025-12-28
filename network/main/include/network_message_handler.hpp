@@ -9,9 +9,9 @@ namespace lynks {
         /* Forward declaration of the connection class */
         class connection;
 
-        /* 
-        Our response handle for the requests made by the clients.
-        */
+        /** 
+         * @brief Our response handle for when answering requests from clients.
+         */
         template <typename T>
         class message_handle {
             public:
@@ -24,6 +24,11 @@ namespace lynks {
                 }
         };
 
+        /**
+         * @brief Handle with belonging to the connection owning the message.
+         * 
+         * Mainly used for handling incoming requests.
+         */
         template <typename T>
         class owned_message_handle {
             public:
