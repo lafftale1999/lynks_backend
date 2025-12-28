@@ -4,8 +4,8 @@
 #include <sstream>
 #include <openssl/sha.h>
 
-namespace lynks::network {
-    std::string crypto::hash256(const std::string& str) {
+namespace lynks::network::crypto {
+    std::string hash256(const std::string& str) {
         unsigned char hash[SHA256_DIGEST_LENGTH];
 
         SHA256_CTX sha256;

@@ -49,6 +49,8 @@ namespace lynks {
                 void wait_for_client_connection() {
                     acceptor.async_accept(
                         [this](std::error_code ec, boost::asio::ip::tcp::socket socket) {
+                            wait_for_client_connection();
+                            
                             if (!ec) {
                                 std::cout << "[SERVER] New connection: " << socket.remote_endpoint() << std::endl;
 
@@ -97,9 +99,11 @@ namespace lynks {
                         asio::co_spawn(
                             context,
                             [this, client_keepalive, _request]() -> asio::awaitable<void> {
+                                std::cout << "\n------- (START) REQUEST -------\n";
                                 http_response raw_response = co_await router.handle_request(_request);
                                 message_handle<http_response> response{raw_response};
                                 client_keepalive->send_response(response);
+                                std::cout << "\n------- (END) REQUEST -------\n";
                                 co_return;
                             },
                             [client_keepalive](std::exception_ptr ptr){

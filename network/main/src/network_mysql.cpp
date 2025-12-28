@@ -28,7 +28,6 @@ namespace lynks::network {
     /* 
     --------------------------- PRIVATE MEMBER FUNCTIONS --------------------------------------
     */
-    static void print_field(const mysql::field_view& f);
 
     asio::awaitable<std::optional<mysql::results>> db_connection::send_query_impl(
         std::string_view sql,
@@ -38,14 +37,13 @@ namespace lynks::network {
         #ifdef LYNKS_BACKEND_DEBUG 
             debug_incoming_query(sql, params, params_size);
         #endif
-        
+
         boost::system::error_code ec;
         auto token = asio::cancel_after(
             std::chrono::seconds(5),
             asio::redirect_error(asio::use_awaitable, ec)
         );
 
-        std::cout << "[SERVER] Fetching connection\n";
         // fetch a connection from the connection_pool
         mysql::pooled_connection connection = co_await connection_pool.async_get_connection(
             token
@@ -55,7 +53,6 @@ namespace lynks::network {
             co_return std::nullopt;
         }
 
-        std::cout << "[SERVER] Preparing statement\n";
         // prepare statement
         mysql::statement statement = co_await connection->async_prepare_statement(
             sql,
@@ -66,7 +63,6 @@ namespace lynks::network {
             co_return std::nullopt;
         }
 
-        std::cout << "[SERVER] Executing query\n";
         // execute the query
         mysql::results result;
         co_await connection->async_execute(
@@ -85,6 +81,9 @@ namespace lynks::network {
         co_return result;
     }
 
+    /**
+     * @brief Static helper function for printing out field_views.
+     */
     static void print_field(const mysql::field_view& f){
     using mysql::field_kind;
 
@@ -120,7 +119,7 @@ namespace lynks::network {
         case field_kind::date:
         case field_kind::datetime:
         case field_kind::time:
-            std::cout << f; // Boost har operator<< för dessa
+            std::cout << f;
             break;
 
         default:

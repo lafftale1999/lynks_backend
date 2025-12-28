@@ -8,6 +8,8 @@ add_executable(${PROJECT_NAME}
     main/src/network_mysql.cpp
     main/repo/user_repo.cpp
     main/service/user_service.cpp
+    main/src/network_session_handler.cpp
+    main/src/network_session_token.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)

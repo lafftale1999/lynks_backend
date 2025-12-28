@@ -22,8 +22,10 @@ namespace lynks {
                 asio::awaitable<http_response> route_request(const http_request& request) {
                     auto path = request.target();
 
-                    if (path == "/create") {
-                        co_return co_await create_session(request);
+                    if (path == "/login") {
+                        co_return co_await login_user(request);
+                    } else if (path == "/create") {
+                        co_return co_await create_meeting(request);
                     } else if (path == "/join") {
 
                     } else if (path == "/leave") {
@@ -35,12 +37,28 @@ namespace lynks {
                     co_return not_found(request);
                 }
 
-                asio::awaitable<http_response> create_session(const http_request& request) {
-                    auto result = co_await _user_service.log_in_user(request.body());
+                asio::awaitable<http_response> login_user(const http_request& request) {
+                    auto result_string = co_await _user_service.log_in_user(request.body());
 
-                    if (!result) co_return bad_request(request);
+                    if (!result_string) co_return bad_request(request);
 
-                    co_return succesful_request(request, *result);
+                    co_return succesful_request(request, *result_string);
+                }
+
+                asio::awaitable<http_response> create_meeting(const http_request& request) {
+                    try {
+                        auto token = request.at(http::field::authorization);
+
+                        auto result_string = co_await _user_service.create_meeting(token);
+                        
+                        if (!result_string) co_return bad_request(request);
+
+                        co_return succesful_request(request, *result_string);
+                    } catch (const std::exception& e) {
+                        std::cerr << "[SERVER] authorization header not found\n";
+                    }
+
+                    co_return bad_request(request);
                 }
 
                 http_response succesful_request(const http_request& request, const std::string& body) {
