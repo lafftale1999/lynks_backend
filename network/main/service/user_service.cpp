@@ -2,7 +2,7 @@
 
 namespace lynks::network {
     user_service::user_service(db_connection& db) 
-    : user_repo(db) {}
+    : user_repo(db){}
 
     awaitable_opt_str user_service::log_in_user(const std::string& request_body_json) {
         user temp(request_body_json);
@@ -43,9 +43,16 @@ namespace lynks::network {
 
             std::cout << "User found\n";
 
-            co_return "{\"action\": \"created\"}";
+            auto janus_response = co_await janus_repo.get_info();
+            if (!janus_response) {
+                std::cerr << "[SERVICE] failed get information from janus\n";
+                co_return std::nullopt;
+            }
+
+            co_return janus_response->body();
             // TODO: Create meeting
         }
+        
         std::cout << "Sessions invalid\n";
         co_return std::nullopt;
     }

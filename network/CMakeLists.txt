@@ -10,6 +10,8 @@ add_executable(${PROJECT_NAME}
     main/service/user_service.cpp
     main/src/network_session_handler.cpp
     main/src/network_session_token.cpp
+    main/repo/janus_repo.cpp
+    main/src/network_janus.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)

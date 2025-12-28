@@ -35,27 +35,75 @@ namespace lynks::network {
     }
 
     asio::awaitable<std::optional<http_response>> janus_request::send_request(const http_request& request, const std::string& host, const uint16_t port) {
-        janus_request jr(host, port);
+        ensure_context_started();
 
-        if (co_await jr.connect_to_server()) {
-            if (co_await jr.send_request_impl(request)) {
-                auto result = co_await jr.read_response();
+        // Handle to the executor that called this coroutine
+        auto caller_executor = co_await asio::this_coro::executor;
 
-                if (!result) co_return std::nullopt;
+        // Initiates an asynchronous function which we can call.
+        auto operation = [&](auto completion_handler) {
+            // Ensure that the completion is delivered to the callers executor
+            auto bound_handler = asio::bind_executor(caller_executor, std::move(completion_handler));
 
-                co_return *result;
-            }
-        }
+            // Spawn a coroutine which runs within the Janus static asio::io_context
+            asio::co_spawn(
+                context, // <- Janus static io_context
 
-        co_return std::nullopt;
+                // TEACHING:
+                // 1. `mutable` keyword enables us to mutate captured variables inside the lambda.
+                // 2. `-> ReturnType` declares the returntype, which is necessary for coroutines.
+                [request, host, port, h = std::move(bound_handler)]() mutable
+                    -> asio::awaitable<void>
+                {
+                    std::optional<http_response> out = std::nullopt;
+
+                    janus_request jr(host, port);
+                    try {
+                        if (co_await jr.connect_to_server()) {
+                            if (co_await jr.send_request_impl(request)) {
+                                out = co_await jr.read_response();
+                            }
+                        }
+                    } catch (const std::exception& e) {
+                        std::cerr << "[JANUS] send_request failed: " << e.what() << std::endl;
+                    }
+
+                    
+                    // Calling h(out) completes the async_initiate operation;
+                    // the awaiting coroutine resumes and receives out as its result.
+                    h(out);
+                    co_return;
+                },
+                asio::detached
+            );
+        };
+        
+        // TEACHING:
+        // async_initiate<CompletionToken, Signature>(operation, token);
+        // 1. decltype - compilation tool to resolve types of objects before compiling the program
+        // 2. In this case, will create completion_handler with the token use_awaitable and the return type Signature
+        // 3. Calls operation(completion_handler)
+        std::optional<http_response> result = co_await asio::async_initiate<decltype(asio::use_awaitable),
+            void(std::optional<http_response>)>(
+                operation, asio::use_awaitable
+            );
+
+        co_return result;
     }
 
     janus_request::janus_request(std::string host, uint16_t port)
     : socket(context), host(std::move(host)), port(std::move(std::to_string(port))) {}
 
+    janus_request::~janus_request() {
+        socket.close();
+    }
+
     asio::awaitable<bool> janus_request::connect_to_server() {
-        if (!ensure_context_started()) {
-            std::cerr << "[SERVER] unable to run janus context\n";
+
+        auto ex = co_await asio::this_coro::executor;
+
+        if (ex != context.get_executor()) {
+            std::cerr << "[JANUS] BUG: coroutine is not running on janus context executor\n";
             co_return false;
         }
 
@@ -70,14 +118,14 @@ namespace lynks::network {
         asio::ip::tcp::resolver resolver(context);
         auto endpoints = co_await resolver.async_resolve(host, port, token);
         if (ec) {
-            std::cerr << "[SERVER] failed to resolve janus endpoint: " << ec.message() << std::endl;
+            std::cerr << "[JANUS] resolve failed: " << ec.message() << std::endl;
             co_return false;
         }
 
         // Connect to server
         auto result = co_await boost::asio::async_connect(socket, endpoints, token);
         if (ec) {
-            std::cerr << "[SERVER] failed to connect to janus server: " << ec.message() << std::endl;
+            std::cerr << "[JANUS] connection failed: " << ec.message() << std::endl;
             co_return false;
         }
 
@@ -95,7 +143,7 @@ namespace lynks::network {
 
         if (!ec) co_return true;
        
-        std::cerr << "[SERVER] failed to send request to server: " << ec.message() << std::endl;
+        std::cerr << "[JANUS] write failed: " << ec.message() << std::endl;
         co_return false;
     }
 
@@ -111,12 +159,10 @@ namespace lynks::network {
         co_await http::async_read(socket, buffer, response, token);
 
         if (ec) {
-            std::cerr << "[SERVER] failed to read janus response: " << ec.message() << std::endl;
+            std::cerr << "[JANUS] read failed: " << ec.message() << std::endl;
             co_return std::nullopt;
         }
 
         co_return response;
     }
-
-    
 }

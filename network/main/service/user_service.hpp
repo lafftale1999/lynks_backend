@@ -3,6 +3,7 @@
 
 #include "network_common.hpp"
 #include "user_repo.hpp"
+#include "janus_repo.hpp"
 #include "network_session_handler.hpp"
 
 using awaitable_opt_str = asio::awaitable<std::optional<std::string>>;
@@ -19,6 +20,8 @@ namespace lynks::network {
             //awaitable_opt_str end_session(const user& _user, const std::string& session_id);
         private:
             user_repository user_repo;
+            janus_repository janus_repo;
+            
             session_handler sessions;
     };
 }
