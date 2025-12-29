@@ -4,6 +4,8 @@
 #include "network_common.hpp"
 #include "network_secrets.hpp"
 
+#include <unordered_map>
+
 namespace lynks::network {
 
     /**
@@ -100,6 +102,48 @@ namespace lynks::network {
             using work_guard_t =
                 asio::executor_work_guard<asio::io_context::executor_type>;
             static std::optional<work_guard_t> work_guard;
+    };
+
+    struct janus_response_message {
+        std::string event_type;
+        std::string transaction;
+        std::string body;
+    };
+
+    class janus_response_buffer {
+        public:
+            janus_response_buffer(asio::any_io_executor executor)
+            : strand(asio::make_strand(executor)) {}
+            
+        // strand creates a serialized context
+        // asio::dispatch(strand, comp) <- serialises the function on our strand.
+
+
+        private:
+            struct waiting_for_tx {
+                explicit waiting_for_tx(asio::any_io_executor executor) : signal(executor) {}
+                asio::steady_timer signal; // <- Reachable signal to start the coroutine again
+                std::optional<janus_response_message> result;
+                boost::system::error_code signal_ec;
+                boost::system::error_code timeout_ec;
+            };
+
+            std::optional<janus_response_message> try_pop_locked(const std::string& transaction) {
+                for (auto it = messages.begin(); it != messages.end(); ++it) {
+                    if (it->transaction == transaction) {
+                        janus_response_message out = std::move(*it);
+                        messages.erase(it);
+                        return out;
+                    }
+                }
+
+                return std::nullopt;
+            }
+
+        private:
+            asio::strand<asio::any_io_executor> strand;
+            std::deque<janus_response_message> messages;
+            std::unordered_map<std::string, std::shared_ptr<waiting_for_tx>> waiters;
     };
 }
 

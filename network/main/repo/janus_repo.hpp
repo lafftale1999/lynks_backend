@@ -11,6 +11,7 @@ namespace lynks::network {
             ~janus_repository();
 
             asio::awaitable<std::optional<http_response>> get_info();
+            asio::awaitable<std::optional<http_response>> create_video_meeting();
 
         private:
             std::string host;
