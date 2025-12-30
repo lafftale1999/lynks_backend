@@ -21,6 +21,7 @@
 #include <boost/beast/core.hpp>
 #include <boost/asio/ts/buffer.hpp>
 #include <boost/asio/ts/internet.hpp>
+#include <boost/asio/steady_timer.hpp>
 
 namespace http = boost::beast::http;
 using http_request = http::request<http::string_body>;

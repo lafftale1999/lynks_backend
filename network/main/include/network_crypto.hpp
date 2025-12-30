@@ -50,6 +50,22 @@ namespace lynks {
                      */
                     T generate_number() { return distribution(rng); }
 
+                    std::string generate_token() {
+                        // First hash
+                        auto raw = generate_number();
+                        auto hash_1 = crypto::hash256(std::to_string(raw));
+
+                        // Second hash
+                        raw = generate_number();
+                        auto hash_2 = crypto::hash256(std::to_string(raw));
+
+                        // Combine together
+                        std::stringstream ss;
+                        ss << hash_1 << hash_2;
+
+                        return crypto::hash256(ss.str());
+                    }
+
                 private:
                     std::mt19937 rng;
                     std::uniform_int_distribution<T> distribution;

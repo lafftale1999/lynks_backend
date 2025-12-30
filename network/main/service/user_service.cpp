@@ -43,13 +43,13 @@ namespace lynks::network {
 
             std::cout << "User found\n";
 
-            auto janus_response = co_await janus_repo.get_info();
+            auto janus_response = co_await janus_repo.create_video_meeting();
             if (!janus_response) {
                 std::cerr << "[SERVICE] failed get information from janus\n";
                 co_return std::nullopt;
             }
 
-            co_return janus_response->body();
+            co_return janus_response->get_body();
             // TODO: Create meeting
         }
         

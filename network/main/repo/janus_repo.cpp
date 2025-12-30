@@ -1,48 +1,30 @@
 #include "janus_repo.hpp"
 
+#include "janus_request_mapper.hpp"
+#include "janus_messages.hpp"
+
 namespace lynks::network {
     janus_repository::janus_repository(std::string host, uint16_t port) 
-    : host(std::move(host)), port(std::move(port)) {}
+    : _host(std::move(host)), port(std::move(port)), context(_host, port) {}
 
-    janus_repository::~janus_repository() {
-        janus_request::shutdown();
+    asio::awaitable<std::optional<janus::response_message>> janus_repository::get_info() {
+        auto request = janus::request_mapper::get_request(
+            janus::request_type::GET_INFO,
+            std::nullopt, _host, "/janus/info"
+        );
+
+        co_return co_await context.send_request(*request, _host, port);
     }
 
-    asio::awaitable<std::optional<http_response>> janus_repository::get_info() {
-        http_request request{};
-        request.target("/janus/info");
-        request.method(http::verb::get);
-        request.version(11);
-        request.set(http::field::host, host);
-        request.set(http::field::user_agent, "lynks/1.0");
-        request.set(http::field::accept, "application/json");
-        request.set(http::field::connection, "close");
+    asio::awaitable<std::optional<janus::response_message>> janus_repository::create_video_meeting() {
+        janus::messages::video_room::create_room_request msg_request;
 
-        co_return co_await janus_request::send_request(request, host, port);
-    }
+        auto request = janus::request_mapper::get_request(
+            janus::request_type::CREATE_ROOM,
+            msg_request.to_json(),
+            _host, context.get_path()
+        );
 
-    asio::awaitable<std::optional<http_response>> janus_repository::create_video_meeting() {
-        /**
-         * @todo
-         * 1. Create session
-         * Send POST to /janus
-         * {"janus" : "create", "transaction" : "<random alphanumeric string>"}
-         * 
-         * This will return:
-         * {"janus" : "success", "transaction" : "<same as the request>","data" : {"id" : <unique integer session ID>}}
-         * 
-         * 2. Attach plugin
-         * Send POST to /janus/"id"
-         * {"janus" : "attach","plugin" : "<the plugin's unique package name>","transaction" : "<random string>"}
-         * 
-         * package_name = janus.plugin.videoroom
-         * 
-         * This will return:
-         * {"janus" : "success","transaction" : "<same as the request>","data" : {"id" : <unique integer plugin handle ID>}}
-         * 
-         * 3. Communicate with plugin handle endpoint
-         * 
-         */
-        
+        co_return co_await context.send_request(*request, _host, port);
     }
 }

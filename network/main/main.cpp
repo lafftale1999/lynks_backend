@@ -13,17 +13,7 @@ class lynks_server : public lynks::network::server_interface {
         }
 };
 
-std::atomic<bool> stopping{false};
-
-void on_sigint(int) {
-    if (!stopping.exchange(true)) {
-        lynks::network::janus_request::shutdown();
-    }
-    std::_Exit(0);
-}
-
 int main() {
-    std::signal(SIGINT, on_sigint);
 
     lynks_server server(60000);
 
@@ -32,7 +22,7 @@ int main() {
         return 1;
     }
 
-    while (!stopping.load()) {
+    while (1) {
         server.update(-1, true);
     }
 
