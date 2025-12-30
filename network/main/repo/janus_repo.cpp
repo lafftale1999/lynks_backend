@@ -27,4 +27,16 @@ namespace lynks::network {
 
         co_return co_await context.send_request(*request, _host, port);
     }
+
+    asio::awaitable<std::optional<janus::response_message>> janus_repository::list_participants(const std::string& body) {
+        janus::messages::video_room::list_participants_request msg_request(body);
+
+        auto request = janus::request_mapper::get_request(
+            janus::request_type::LIST_MEETING_PARTICIPANTS,
+            msg_request.to_json(),
+            _host, context.get_path()
+        );
+
+        co_return co_await context.send_request(*request, _host, port);
+    }
 }

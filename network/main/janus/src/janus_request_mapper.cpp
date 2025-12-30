@@ -5,11 +5,12 @@ static constexpr std::string USER_AGENT = "lynks_janus/1.0";
 namespace janus {
     request_mapper::request_map request_mapper::_request_map = 
         {
-            {request_type::GET_INFO,                &request_mapper::get_info},
-            {request_type::CREATE_SESSION,          &request_mapper::create_session},
-            {request_type::ACTIVATE_VIDROOM_PLUGIN, &request_mapper::activate_vidroom_plugin},
-            {request_type::CREATE_ROOM,             &request_mapper::create_room},
-            {request_type::LONG_POLL_EVENTS,        &request_mapper::long_poll_events}
+            {request_type::GET_INFO,                    &request_mapper::get_info},
+            {request_type::CREATE_SESSION,              &request_mapper::create_session},
+            {request_type::ACTIVATE_VIDROOM_PLUGIN,     &request_mapper::activate_vidroom_plugin},
+            {request_type::CREATE_ROOM,                 &request_mapper::create_room},
+            {request_type::LONG_POLL_EVENTS,            &request_mapper::long_poll_events},
+            {request_type::LIST_MEETING_PARTICIPANTS,   &request_mapper::list_meeting_participants}
         };
 
     std::optional<http_request> request_mapper::get_request(
@@ -68,6 +69,12 @@ namespace janus {
     }
 
     http_request request_mapper::create_room(optional_body body, const std::string& host, const std::string& path) {
+        http_request request;
+        set_up_standard_post_request(request, body, host, path);
+        return request;
+    }
+
+    http_request request_mapper::list_meeting_participants(optional_body body, const std::string& host, const std::string& path) {
         http_request request;
         set_up_standard_post_request(request, body, host, path);
         return request;

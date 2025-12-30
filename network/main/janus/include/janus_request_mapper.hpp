@@ -11,7 +11,8 @@ namespace janus {
         ACTIVATE_VIDROOM_PLUGIN,
         CREATE_ROOM,
         GET_INFO,
-        LONG_POLL_EVENTS
+        LONG_POLL_EVENTS,
+        LIST_MEETING_PARTICIPANTS
     };
     
     class request_mapper {
@@ -48,6 +49,7 @@ namespace janus {
             static http_request create_room(optional_body body, const std::string& host, const std::string& path);
             static http_request get_info(optional_body body, const std::string& host, const std::string& path);
             static http_request long_poll_events(optional_body body, const std::string& host, const std::string& path);
+            static http_request list_meeting_participants(optional_body body, const std::string& host, const std::string& path);
             static void post_request_validator(optional_body body);
     };
 }

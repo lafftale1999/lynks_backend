@@ -15,6 +15,7 @@ namespace lynks::network {
 
             awaitable_opt_str log_in_user(const std::string& request_body_json);
             awaitable_opt_str create_meeting(const std::string& token);
+            awaitable_opt_str list_participants(const std::string& token, const std::string& body);
 
             //awaitable_opt_str join_session(const user& _user, const std::string& session_id);
             //awaitable_opt_str end_session(const user& _user, const std::string& session_id);

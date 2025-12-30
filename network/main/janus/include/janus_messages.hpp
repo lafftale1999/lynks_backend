@@ -90,13 +90,65 @@ namespace janus::messages {
                 create_room_response(std::string json_str);
                 const std::string& get_json() const;
                 const std::string& get_video_room() const;
-                const std::string& get_room_id() const;
+                uint64_t get_room_id() const;
 
             private:
                 std::string json_org;
                 std::string videoroom;
-                std::string room_id;
+                uint64_t room_id;
                 std::string transaction;
+        };
+
+        class user_create_video_response {
+            public:
+                user_create_video_response(std::string json_str);
+
+                const std::string& get_janus() const;
+                const std::string& get_transaction() const;
+                uint64_t get_room_id() const;
+                const std::string& get_original_json() const;
+                std::string to_json() const;
+                
+            private:
+                std::string json_org;
+                std::string janus;
+                uint64_t room_id;
+                std::string transaction;
+        };
+    
+        class list_participants_request {
+            public:
+                list_participants_request(std::string json_str);
+                std::string to_json() const;
+
+            private:
+                std::string janus;
+                std::string transaction;
+                std::string request;
+                uint64_t room_id;  
+        };
+
+        class list_participants_response {
+            public:
+                list_participants_response(std::string json_str);
+                const std::string& get_janus() const;
+                const std::string& get_transaction() const;
+
+                const std::string& get_original_json() const;
+                std::string to_json() const;
+
+                uint64_t get_room_id() const;
+                const std::vector<uint64_t>& get_feed_ids() const;
+
+            private:
+                std::string json_org;
+
+                std::string janus;
+                std::string transaction;
+
+                std::string videoroom;
+                uint64_t room_id;
+                std::vector<uint64_t> feed_ids;
         };
     }
 }

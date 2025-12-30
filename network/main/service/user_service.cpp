@@ -1,4 +1,5 @@
 #include "user_service.hpp"
+#include "janus_messages.hpp"
 
 namespace lynks::network {
     user_service::user_service(db_connection& db) 
@@ -29,19 +30,12 @@ namespace lynks::network {
     }
 
     awaitable_opt_str user_service::create_meeting(const std::string& token) {
-        std::cout << "Token: " << token << std::endl;
-        
         if (sessions.validate_session(token)) {
-            std::cout << "Session is active\n";
-
             auto username = sessions.get_username_by_token(token);
             if (!username) co_return std::nullopt;
-            std::cout << "Username found\n";
 
             auto opt_user = co_await user_repo.find_user_by_username(*username);
             if (!opt_user) co_return std::nullopt;
-
-            std::cout << "User found\n";
 
             auto janus_response = co_await janus_repo.create_video_meeting();
             if (!janus_response) {
@@ -49,14 +43,40 @@ namespace lynks::network {
                 co_return std::nullopt;
             }
 
-            co_return janus_response->get_body();
-            // TODO: Create meeting
+            janus::messages::video_room::user_create_video_response msg_response(janus_response->get_body());
+
+            std::cout << "[SERVICE] room_id: " << msg_response.get_room_id() << std::endl;
+            co_return msg_response.to_json();
         }
         
         std::cout << "Sessions invalid\n";
         co_return std::nullopt;
     }
 
+    awaitable_opt_str user_service::list_participants(const std::string& token, const std::string& body) {
+        if (sessions.validate_session(token)) {
+            auto username = sessions.get_username_by_token(token);
+            if (!username) co_return std::nullopt;
+            
+            std::cout << "\n[DEBUG] username found\n";
+
+            auto opt_user = co_await user_repo.find_user_by_username(*username);
+            if (!opt_user) co_return std::nullopt;
+            std::cout << "\n[DEBUG] user found in database\n";
+
+            auto janus_response = co_await janus_repo.list_participants(body);
+            if (!janus_response) {
+                std::cerr << "[SERVICE] failed to get information from janus\n";
+                co_return std::nullopt;
+            }
+            std::cout << "\n[DEBUG] retrieved response from participants\n";
+
+            janus::messages::video_room::list_participants_response msg_response(janus_response->get_body());
+            co_return msg_response.to_json();
+        }
+
+        co_return std::nullopt;
+    }
     /* awaitable_opt_str user_service::join_session(const user& _user, const std::string& session_id) {
 
     }

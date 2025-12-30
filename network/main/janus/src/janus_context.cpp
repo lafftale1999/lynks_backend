@@ -132,6 +132,7 @@ namespace janus {
          * our request will be sent to the long_poll_buffer instead.
          */
         if (msg.get_event_type() == "ack") {
+            std::cout << "[JANUS] ack receiver\n";
             co_return co_await long_poll_buffer.wait_for_transaction(msg.get_transaction());
         }
 
@@ -194,7 +195,7 @@ namespace janus {
         messages::session::attach_plugin_response msg_response(response->get_body());
         videoroom_path = msg_response.get_plugin_handle();
         std::cout << "VIDEOPATH: " << videoroom_path << std::endl;
-        
+
         co_return true;
     }
 
@@ -257,7 +258,7 @@ namespace janus {
         auto request = request_mapper::get_request(
             request_type::LONG_POLL_EVENTS,
             std::nullopt,
-            host, "janus/"+session_path
+            host, "/janus/"+session_path
         );
 
         boost::system::error_code ec;
@@ -307,6 +308,12 @@ namespace janus {
                 std::cerr << "[JANUS] long poll read failed: " << ec.message() << std::endl;
                 co_return;
             }
+
+            try {
+                messages::session::keep_alive_message is_keep_alive(long_temp_response.body());
+                std::cout << "[JANUS] keep alive received\n";
+                co_return;
+            } catch (const std::exception& e) {}
 
             std::cout << "[JANUS] response received:\n";
             std::cout << long_temp_response;

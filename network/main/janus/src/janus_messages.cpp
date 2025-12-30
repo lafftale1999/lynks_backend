@@ -163,7 +163,7 @@ namespace janus::messages {
             auto json = nlohmann::json::parse(json_str);
 
             videoroom = json["videoroom"].get<std::string>();
-            room_id = json["room"].get<std::string>();
+            room_id = json["room"].get<uint64_t>();
             transaction = json["transaction"].get<std::string>();
         }   
         
@@ -175,8 +175,134 @@ namespace janus::messages {
             return videoroom;
         }
         
-        const std::string& create_room_response::get_room_id() const {
+        uint64_t create_room_response::get_room_id() const {
             return room_id;
         }
+
+
+        /**
+         * --------------------------------------------------------------------------------------------------------------------------
+         * USER CREATE VIDEO RESPONSE
+         * --------------------------------------------------------------------------------------------------------------------------
+         */
+
+        user_create_video_response::user_create_video_response(std::string json_str)
+        : json_org(json_str) {
+            auto json = nlohmann::json::parse(json_str);
+
+            janus = json["janus"].get<std::string>();
+            transaction = json["transaction"].get<std::string>();
+            room_id = json["plugindata"]["data"]["room"].get<uint64_t>();
+        }
+
+        const std::string& user_create_video_response::get_janus() const {
+            return janus;
+        }
+
+        const std::string& user_create_video_response::get_transaction() const {
+            return transaction;
+        }
+
+        uint64_t user_create_video_response::get_room_id() const {
+            return room_id;
+        }
+
+        const std::string& user_create_video_response::get_original_json() const {
+            return json_org;
+        }
+
+        std::string user_create_video_response::to_json() const {
+            nlohmann::json json;
+
+            json["action"] = janus;
+            json["room_id"] = room_id;
+
+            return json.dump();
+        }
+
+
+        /**
+         * --------------------------------------------------------------------------------------------------------------------------
+         * LIST PARTICIPANTS REQUEST
+         * --------------------------------------------------------------------------------------------------------------------------
+         */
+
+        list_participants_request::list_participants_request(std::string json_str)
+        : janus("message"), transaction("test123"), request("listparticipants") {
+            auto json = nlohmann::json::parse(json_str);
+            room_id = json["room_id"].get<uint64_t>();
+        }
+
+        std::string list_participants_request::to_json() const {
+            nlohmann::json json;
+
+            json["janus"] = janus;
+            json["transaction"] = transaction;
+            json["body"]["request"] = request;
+            json["body"]["room"] = room_id;
+
+            return json.dump();
+        }
+
+        /**
+         * --------------------------------------------------------------------------------------------------------------------------
+         * LIST PARTICIPANTS RESPONSE
+         * --------------------------------------------------------------------------------------------------------------------------
+         */
+
+
+        list_participants_response::list_participants_response(std::string json_str)
+        : json_org(json_str)
+        {  
+            auto json = nlohmann::json::parse(json_str);
+            
+            janus = json["janus"].get<std::string>();
+            transaction = json["transaction"].get<std::string>();
+            videoroom = json["plugindata"]["data"]["videoroom"].get<std::string>();
+            room_id = json["plugindata"]["data"]["room"].get<uint64_t>();
+
+            if (
+                json["plugindata"]["data"].contains("participants") &&
+                json["plugindata"]["data"]["participants"].is_array()
+            ) {
+                for (const auto& p : json["plugindata"]["data"]["participants"]) {
+                    if (!p.is_object()) continue;
+                    if (!p["publisher"].get<bool>()) continue;
+                    if (!p.contains("id")) continue;
+                    feed_ids.push_back(p["id"].get<uint64_t>());
+                }
+            }
+        }
+
+        const std::string& list_participants_response::get_janus() const {
+            return janus;
+        }
+
+        const std::string& list_participants_response::get_transaction() const {
+            return transaction;
+        }
+
+        const std::string& list_participants_response::get_original_json() const {
+            return json_org;
+        }
+
+        std::string list_participants_response::to_json() const {
+            nlohmann::json json;
+
+            json["action"] = janus;
+            json["room_id"] = room_id;
+            json["publishers"] = feed_ids;
+
+            return json.dump();
+        }
+
+        uint64_t list_participants_response::get_room_id() const {
+            return room_id;
+        }
+
+        const std::vector<uint64_t>& list_participants_response::get_feed_ids() const {
+            return feed_ids;
+        }
+
     }
 }

@@ -12,6 +12,7 @@ namespace lynks::network {
 
             asio::awaitable<std::optional<janus::response_message>> get_info();
             asio::awaitable<std::optional<janus::response_message>> create_video_meeting();
+            asio::awaitable<std::optional<janus::response_message>> list_participants(const std::string& body);
 
         private:
             std::string _host;

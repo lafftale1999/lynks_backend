@@ -26,18 +26,19 @@ namespace lynks {
                         co_return co_await login_user(request);
                     } else if (path == "/create") {
                         co_return co_await create_meeting(request);
-                    } else if (path == "/join") {
-
+                    } else if (path == "/list_participants") {
+                        co_return co_await list_participants(request);
                     } else if (path == "/leave") {
 
                     } else {
-
+                        std::cout << "[ROUTER] unexpected path received: " << request.target() << std::endl;
                     }
 
                     co_return not_found(request);
                 }
 
                 asio::awaitable<http_response> login_user(const http_request& request) {
+                    std::cout << request << std::endl;
                     auto result_string = co_await _user_service.log_in_user(request.body());
 
                     if (!result_string) co_return bad_request(request);
@@ -47,15 +48,32 @@ namespace lynks {
 
                 asio::awaitable<http_response> create_meeting(const http_request& request) {
                     try {
+                        std::cout << request << std::endl;
                         auto token = request.at(http::field::authorization);
+                        std::cout << "[ROUTER] token found: " << token << std::endl;
 
                         auto result_string = co_await _user_service.create_meeting(token);
-                        
+                        std::cout << "[ROUTER] meeting created: " << token << std::endl;
+
                         if (!result_string) co_return bad_request(request);
 
                         co_return succesful_request(request, *result_string);
                     } catch (const std::exception& e) {
-                        std::cerr << "[SERVER] authorization header not found\n";
+                        std::cerr << "[ROUTER] failed create meeting: " << e.what() << std::endl;
+                    }
+
+                    co_return bad_request(request);
+                }
+
+                asio::awaitable<http_response> list_participants(const http_request& request) {
+                    try {
+                        auto token = request.at(http::field::authorization);
+                        auto result_string = co_await _user_service.list_participants(token, request.body());
+                        if (!result_string) co_return bad_request(request);
+                        std::cout << "[DEBUG] body: " << *result_string << std::endl;
+                        co_return succesful_request(request, *result_string);
+                    } catch (const std::exception& e) {
+                        std::cerr << "[ROUTER] list_participants failed: " << e.what() << std::endl;
                     }
 
                     co_return bad_request(request);
