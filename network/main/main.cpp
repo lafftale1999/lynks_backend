@@ -1,4 +1,5 @@
 #include "network_lynks.hpp"
+#include <csignal>
 
 using tcp = boost::asio::ip::tcp;
 namespace http = boost::beast::http;

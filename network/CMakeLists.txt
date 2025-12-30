@@ -1,15 +1,16 @@
 cmake_minimum_required(VERSION 3.21)
 project(lynks_backend LANGUAGES CXX)
 
+file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/main/repo/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/main/service/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/main/janus/src/*.cpp"
+)
+
 add_executable(${PROJECT_NAME}
     main/main.cpp
-    main/src/network_crypto.cpp
-    main/src/network_user.cpp
-    main/src/network_mysql.cpp
-    main/repo/user_repo.cpp
-    main/service/user_service.cpp
-    main/src/network_session_handler.cpp
-    main/src/network_session_token.cpp
+    ${APP_SOURCES}
 )
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
@@ -28,6 +29,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
     ${CMAKE_CURRENT_SOURCE_DIR}/main/repo
     ${CMAKE_CURRENT_SOURCE_DIR}/main/service
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/janus/include
     ${CMAKE_CURRENT_SOURCE_DIR}/secret
 
     # Boost headers

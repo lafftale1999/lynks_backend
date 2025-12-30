@@ -82,6 +82,10 @@ namespace lynks {
                     }
                 }
 
+                asio::io_context& get_context() {
+                    return context;
+                }
+
             protected:
                 virtual bool on_client_connect(std::shared_ptr<connection> client) {
                     return false;

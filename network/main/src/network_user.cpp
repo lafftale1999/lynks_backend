@@ -21,8 +21,8 @@ namespace lynks::network {
         try {
             auto json = nlohmann::json::parse(json_string);
             id = 0;
-            username = json["users"]["username"].get<std::string>();
-            password = json["users"]["password"].get<std::string>();
+            username = json["username"].get<std::string>();
+            password = json["password"].get<std::string>();
 
             hash_password();
             validate_user();
