@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 project(lynks_backend LANGUAGES CXX)
 
+include(FetchContent)
+
 file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/main/repo/*.cpp"
@@ -15,15 +17,17 @@ add_executable(${PROJECT_NAME}
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    _WIN32_WINNT=0x0A00
-    WINVERS=0x0A00
-)
-
-# ---- OpenSSL + Threads ----
-set(OPENSSL_ROOT_DIR "C:/dev/msys64/mingw64")
-find_package(OpenSSL REQUIRED)
+# ---- Threads + OpenSSL ----
 find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
+
+# ---- nlohmann/json (header-only) via FetchContent ----
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(nlohmann_json)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
@@ -31,30 +35,38 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main/service
     ${CMAKE_CURRENT_SOURCE_DIR}/main/janus/include
     ${CMAKE_CURRENT_SOURCE_DIR}/secret
-
-    # Boost headers
-    C:/dev/boost
-    C:/dev/cpp_external_libs/nlohmann/include
 )
 
-# ---- Build Boost.Charconv from source ----
+# ---- Build Boost.Charconv from Boost source tree ----
+# Expect BOOST_ROOT to be provided (e.g. from Dockerfile)
+if(NOT DEFINED BOOST_ROOT)
+  set(BOOST_ROOT "" CACHE PATH "Path to Boost source root (containing boost/ and libs/)")
+endif()
+
+if(BOOST_ROOT STREQUAL "")
+  message(FATAL_ERROR "BOOST_ROOT is not set. Provide -DBOOST_ROOT=/path/to/boost_1_xx_0")
+endif()
+
 add_library(boost_charconv STATIC
-    C:/dev/boost/libs/charconv/src/from_chars.cpp
-    C:/dev/boost/libs/charconv/src/to_chars.cpp
+    ${BOOST_ROOT}/libs/charconv/src/from_chars.cpp
+    ${BOOST_ROOT}/libs/charconv/src/to_chars.cpp
 )
 
 target_include_directories(boost_charconv PUBLIC
-    C:/dev/boost
+    ${BOOST_ROOT}
 )
 
-# Ofta bra att slå av auto-linking-beteende för Boost libs på Windows:
 target_compile_definitions(boost_charconv PUBLIC BOOST_CHARCONV_NO_LIB)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     boost_charconv
-    ws2_32
-    mswsock
     Threads::Threads
     OpenSSL::SSL
     OpenSSL::Crypto
+    nlohmann_json::nlohmann_json
 )
+
+# Nice-to-have: stricter warnings on GCC/Clang
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+endif()

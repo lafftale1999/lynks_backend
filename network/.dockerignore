@@ -1,0 +1,20 @@
+# CMake / build
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+*.ninja
+.ninja_*
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
