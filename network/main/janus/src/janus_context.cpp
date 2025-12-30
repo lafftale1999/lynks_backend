@@ -193,7 +193,8 @@ namespace janus {
         std::cout << "[JANUS] init videoroom response: " << *response;
         messages::session::attach_plugin_response msg_response(response->get_body());
         videoroom_path = msg_response.get_plugin_handle();
-
+        std::cout << "VIDEOPATH: " << videoroom_path << std::endl;
+        
         co_return true;
     }
 

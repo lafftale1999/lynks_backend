@@ -87,7 +87,7 @@ namespace janus::messages {
             auto json = nlohmann::json::parse(json_str);
             janus = json["janus"].get<std::string>();
             transaction = json["transaction"].get<std::string>();
-            plugin_handle = json["data"]["id"].get<std::string>();
+            plugin_handle = std::to_string(json["data"]["id"].get<uint64_t>());
         }
 
         const std::string& attach_plugin_response::get_json() const {
@@ -138,13 +138,15 @@ namespace janus::messages {
          */
     
         create_room_request::create_room_request()
-        : request("create"), is_private("false") {}
+        : janus("message"), request("create"), is_private(false), transaction("test123") {}
 
         std::string create_room_request::to_json() const {
             nlohmann::json json;
 
-            json["request"] = request;
-            json["is_private"] = is_private;
+            json["janus"] = janus;
+            json["transaction"] = transaction;
+            json["body"]["request"] = request; 
+            json["body"]["is_private"] = is_private;
 
             return json.dump();
         }
@@ -162,6 +164,7 @@ namespace janus::messages {
 
             videoroom = json["videoroom"].get<std::string>();
             room_id = json["room"].get<std::string>();
+            transaction = json["transaction"].get<std::string>();
         }   
         
         const std::string& create_room_response::get_json() const {

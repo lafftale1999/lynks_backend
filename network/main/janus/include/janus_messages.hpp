@@ -79,8 +79,10 @@ namespace janus::messages {
                 std::string to_json() const;
 
             private:
+                std::string janus;
                 std::string request;
-                std::string is_private;
+                bool is_private;
+                std::string transaction;
         };
 
         class create_room_response {
@@ -94,6 +96,7 @@ namespace janus::messages {
                 std::string json_org;
                 std::string videoroom;
                 std::string room_id;
+                std::string transaction;
         };
     }
 }
