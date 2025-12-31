@@ -294,7 +294,7 @@ namespace janus {
             asio::redirect_error(asio::use_awaitable, ec)
         );
 
-        while(1) {
+        while(is_connected()) {
             long_temp_response = {};
 
             co_await boost::beast::http::async_read(
