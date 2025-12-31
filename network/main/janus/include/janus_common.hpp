@@ -1,6 +1,32 @@
 #ifndef JANUS_COMMON_INCLUDES_HPP_
 #define JANUS_COMMON_INCLUDES_HPP_
 
-#include "network_common.hpp"
+#include <iostream>
+#include <memory>
+#include <vector>
+#include <deque>
+#include <thread>
+#include <mutex>
+#include <optional>
+#include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <cmath>
+#include <map>
+
+#define BOOST_CHARCONV_HEADER_ONLY
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/asio/ts/buffer.hpp>
+#include <boost/asio/ts/internet.hpp>
+#include <boost/asio/steady_timer.hpp>
+
+namespace http = boost::beast::http;
+using http_request = http::request<http::string_body>;
+using http_response = http::response<http::string_body>;
+
+namespace asio = boost::asio;
 
 #endif

@@ -1,0 +1,59 @@
+services:
+  mysql:
+    build:
+      context: ./mysql
+    image: lynks-mysql:latest
+    container_name: lynks-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lynks_db
+    ports:
+      - "3307:3306"   # host:container
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -prootpassword --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  janus:
+    build: ./janus_webrtc
+    image: webrtc:latest
+    ports:
+      - "8088:8088"
+      - "8188:8188"
+    command: ["/opt/janus/bin/janus"]
+
+  lynks_backend:
+    build:
+      context: ./network
+      dockerfile: Dockerfile
+    image: lynks_backend:latest
+    container_name: lynks_backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+      janus:
+        condition: service_started
+    ports:
+      - "60000:60000"
+    environment:
+      TZ: "Europe/Stockholm"
+
+      # VIKTIGT: Inne i docker-nätet ska du använda service-namn + containerport
+      DB_HOST: "mysql"
+      DB_PORT: "3306"     # INTE 3307 (3307 är host-port)
+      DB_NAME: "lynks_db"
+      DB_USER: "lynks_admin"
+      DB_PASSWORD: "admin123"
+
+      # Om backend pratar med Janus internt:
+      JANUS_HOST: "janus"
+      JANUS_PORT: "8188"
+    command: ["60000"]
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

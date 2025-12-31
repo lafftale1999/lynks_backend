@@ -80,7 +80,6 @@ namespace lynks::network {
         });
 
         if (it != sessions.end()) {
-            std::cout << "Token found\n";
             return it->validate_token();
         }
 
