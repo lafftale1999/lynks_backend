@@ -184,6 +184,8 @@ namespace janus {
         messages::session::attach_plugin_response msg_response(response->get_body());
         videoroom_path = msg_response.get_plugin_handle();
 
+        std::cout << "[JANUS] successfully initialized Janus-connection\n";
+        
         co_return true;
     }
 

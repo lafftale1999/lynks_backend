@@ -1,3 +1,12 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::session_token, an object used to represent and track an individual 
+ * authentication sessions. Each token binds a 64-character hash to an owner identifier (such as a 
+ * username) and maintains a timestamp-based lifetime. This enables lookups with token to receive 
+ * the owners username for example.
+ */
+
 #ifndef NETWORK_SESSION_TOKEN_HPP_
 #define NETWORK_SESSION_TOKEN_HPP_
 

@@ -1,3 +1,11 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines the lynks::network::router class, which acts as the central HTTP 
+ * request dispatcher for the backend. It inspects the incoming request path and 
+ * routes each request to the appropriate handler.
+ */
+
 #ifndef NETWORK_ROUTER_HPP_
 #define NETWORK_ROUTER_HPP_
 

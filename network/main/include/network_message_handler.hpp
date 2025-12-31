@@ -1,3 +1,12 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lightweight message wrapper-types used to pass HTTP requests and responses through 
+ * the networking layer while preserving their ownership context. It introduces a generic message_handle 
+ * for holding protocol data and an owned_message_handle that pairs a message with the client connection 
+ * that produced it.
+ */
+
 #ifndef NETWORK_REQUEST_HANDLER_HPP_
 #define NETWORK_REQUEST_HANDLER_HPP_
 

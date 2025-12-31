@@ -1,3 +1,18 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief This header defines janus::temporary_connection, an abstraction for sending single HTTP requests 
+ * to the Janus WebRTC REST API using asynchronous I/O.
+ * 
+ * Rather than maintaining a persistent connection, temporary_connection opens a TCP connection, sends a 
+ * prepared http_request, reads the corresponding http_response and then shuts down cleanly. This pattern 
+ * matches Janus’s REST interaction model for non–long-poll operations such as session creation, plugin 
+ * attachment and room management.
+ * 
+ * The class exposes a single high-level static coroutine, send_request, which encapsulates DNS resolution, 
+ * connection establishment, request transmission and response parsing.
+ */
+
 #ifndef JANUS_CONNECTION_HPP_
 #define JANUS_CONNECTION_HPP_
 

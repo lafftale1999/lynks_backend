@@ -1,19 +1,29 @@
 services:
   lynks_backend:
     build:
-      context: .
+      context: ./network
       dockerfile: Dockerfile
     image: lynks_backend:latest
-    command: ["60000"]
     container_name: lynks_backend
-    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      janus:
+        condition: service_started
     ports:
       - "60000:60000"
     environment:
-      # Lägg era riktiga envs här
-      # EXAMPLE:
-      # LOG_LEVEL: "info"
       TZ: "Europe/Stockholm"
-    # Om ni behöver config/secret som filer:
-    # volumes:
-    #   - ./config:/app/config:ro
+
+      # VIKTIGT: Inne i docker-nätet ska du använda service-namn + containerport
+      DB_HOST: "mysql"
+      DB_PORT: "3306"     # INTE 3307 (3307 är host-port)
+      DB_NAME: "lynks_db"
+      DB_USER: "lynks_admin"
+      DB_PASSWORD: "admin123"
+
+      # Om backend pratar med Janus internt:
+      JANUS_HOST: "janus"
+      JANUS_PORT: "8188"
+    command: ["60000"]
+    restart: unless-stopped

@@ -1,3 +1,12 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines the lynks::network::connection class, which represents a single asynchronous TCP 
+ * connection between the HTTP server and a client. It is responsible for managing the full lifetime 
+ * of a client connection, including reading incoming HTTP requests, forwarding them into a shared 
+ * request queue for processing, and serializing outgoing HTTP responses back to the client.
+ */
+
 #ifndef NETWORK_CONNECTION_HPP_
 #define NETWORK_CONNECTION_HPP_
 

@@ -1,3 +1,11 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::user, a simple model representing a user within the backend system. 
+ * The class supports construction from raw JSON input, plaintext credentials or fully populated 
+ * database records, hashing passwords as needed during initialization.
+ */
+
 #ifndef NETWORK_USER_HPP_
 #define NETWORK_USER_HPP_
 

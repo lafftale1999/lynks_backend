@@ -1,3 +1,10 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines a simple, templated, thread-safe queue used for passing messages 
+ * between asynchronous components of the backend.
+ */
+
 #ifndef NETWORK_QUEUE_HPP_
 #define NETWORK_QUEUE_HPP_
 

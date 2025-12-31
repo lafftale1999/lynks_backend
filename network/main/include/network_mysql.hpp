@@ -1,3 +1,10 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::db_connection, an asynchronous abstraction over a MySQL 
+ * database connection pool built on Boost.MySQL.
+ */
+
 #ifndef NETWORK_MYSQL_HPP_
 #define NETWORK_MYSQL_HPP_
 

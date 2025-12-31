@@ -46,7 +46,7 @@ I have also created a testclient which you can use: https://github.com/lafftale1
 ---
 
 ### network_secrets.hpp
-You need to create and populate `network/secrets/network_secrets.hpp`. You can use the following template:
+You need to create and populate `network/secret/network_secrets.hpp`. You can use the following template:
 
 ```cpp
 #ifndef NETWORK_SECRETS_HPP_
@@ -397,6 +397,9 @@ Once the stack is running, the typical client flow looks like this:
 
 ## Known Bugs
 * Connections ends with read request failed. This is because they are closed when finished sending the request - so the socket hit End of stream and closes, as it should. 
+
+## Failure in building the Janus WebRTC Image
+Some errors might be thrown while trying to build the `/janus_webrtc/Dockerfile`. One fix for this is to ensure that [`janus_webrtc/dependencies.sh`](./janus_webrtc/dependencies.sh) is in `LF`-format. Since Docker copies this from your computer into the image, it might be in `CRLF` format (Windows) and the `janus_webrtc`-image is based on `Alpine` (Linux).
 
 ## Docker fresh start
 All the following commands must be made from the [`/root`](./) of the project.

@@ -1,3 +1,11 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::user_repository, a data-access abstraction responsible for retrieving 
+ * user records from the database. It uses the shared db_connection to execute asynchronous queries and 
+ * maps query results into models.
+ */
+
 #ifndef USER_REPOSITORY_HPP_
 #define USER_REPOSITORY_HPP_
 

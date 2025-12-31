@@ -1,6 +1,13 @@
 /**
- * @brief This header defines a centralized request mapping and construction layer for Janus WebRTC HTTP API calls. It translates high-level request_type intents into fully-formed http_request objects with the correct method, headers, path, and optional JSON body.
- * The request_mapper class acts as a static factory, using an internal map from request_type to request builder functions. This design cleanly separates what operation is being performed (e.g. create session, attach VideoRoom plugin, long-poll events) from how the corresponding HTTP request is constructed.
+ * @author lafftale1999
+ * 
+ * @brief This header defines a centralized request mapping and construction layer for Janus WebRTC HTTP API calls. 
+ * It translates high-level request_type intents into fully-formed http_request objects with the correct method, 
+ * headers, path, and optional JSON body.
+ * 
+ * The request_mapper class acts as a static factory, using an internal map from request_type to request builder functions.
+ * This design cleanly separates what operation is being performed (e.g. create session, attach VideoRoom plugin, long-poll
+ * events) from how the corresponding HTTP request is constructed.
  */
 
 #ifndef JANUS_REQUEST_MAPPER_HPP_

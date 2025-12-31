@@ -1,3 +1,11 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::user_service, the main service that coordinates user authentication and 
+ * meeting-related operations. It sits between the HTTP router and lower-level repositories, combining 
+ * database access, session management and Janus WebRTC interactions.
+ */
+
 #ifndef USER_SERVICE_HPP_
 #define USER_SERVICE_HPP_
 

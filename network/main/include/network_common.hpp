@@ -1,3 +1,9 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Common headers used in the lynks::network namespace.
+ */
+
 #ifndef COMMON_HEADERS_HPP_
 #define COMMON_HEADERS_HPP_
 

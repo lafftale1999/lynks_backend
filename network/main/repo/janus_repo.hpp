@@ -1,3 +1,12 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::janus_repository, a thin integration layer between the backend and 
+ * the Janus WebRTC integration. It owns a configured janus::janus context and exposes a small, 
+ * focused set of coroutines for interacting with Janus, such as retrieving server information, 
+ * creating VideoRoom meetings and listing room participants.
+ */
+
 #ifndef JANUS_REPOSITORY_HPP_
 #define JANUS_REPOSITORY_HPP_
 

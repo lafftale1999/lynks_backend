@@ -1,3 +1,13 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::server_interface, the main entry point for running the backend HTTP server. 
+ * It owns the Boost.Asio io_context, TCP acceptor and server thread. Sets up logic for accepting incoming 
+ * client connections and manages their lifetime through connection objects. Incoming requests are pulled 
+ * from a shared queue and handled asynchronously using coroutines, with each request routed through the router 
+ * and its result sent back to the originating client.
+ */
+
 #ifndef NETWORK_SERVER_HPP_
 #define NETWORK_SERVER_HPP_
 

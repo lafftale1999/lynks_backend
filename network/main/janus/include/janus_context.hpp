@@ -1,3 +1,13 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines a high-level C++ client (janus::janus) for interacting with the Janus WebRTC REST API over HTTP.
+ * It owns an `asio::io_context` running on its own thread, handles session/plugin initialization (including VideoRoom setup)
+ * and implements Janus’s long-polling event loop via a dedicated TCP socket and response buffer. The class exposes async 
+ * methods to start/stop the context, send one-off API requests (handling Janus ACK vs. deferred responses)
+ *  and generates unique transaction/session identifiers to correlate requests and events.
+ */
+
 #ifndef JANUS_CONTEXT_HPP_
 #define JANUS_CONTEXT_HPP_
 

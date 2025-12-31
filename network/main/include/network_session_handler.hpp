@@ -1,3 +1,14 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines lynks::network::session_handler, a thread-safe manager for active login 
+ * sessions backed by a fixed-size container of session_token objects. It can create new 
+ * sessions (issuing a 64-character token), validate tokens (and refresh their lifetime on 
+ * use) and look up the associated username for an authenticated request. To keep the 
+ * session set clean, it also runs a dedicated cleanup thread that periodically removes 
+ * expired/inactive sessions and can be explicitly called via clean_inactive_sessions().
+ */
+
 #ifndef NETWORK_SESSION_HANDLER_HPP_
 #define NETWORK_SESSION_HANDLER_HPP_
 

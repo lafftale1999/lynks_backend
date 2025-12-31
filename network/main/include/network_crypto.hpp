@@ -1,3 +1,13 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Defines small cryptographic and randomness utilities used by the networking layer. It provides 
+ * a hash256 function for hashing arbitrary strings into fixed-length 64-character values, which is suitable 
+ * for identifiers and tokens and a templated random_engine constrained to integral types for generating 
+ * pseudo-random numbers within a defined range. The random_engine also offers a higher-level generate_token 
+ * helper that combines multiple random values and hashing steps to produce non-guessable tokens.
+ */
+
 #ifndef NETWORK_CRYPTOGRAPHY_HPP_
 #define NETWORK_CRYPTOGRAPHY_HPP_
 

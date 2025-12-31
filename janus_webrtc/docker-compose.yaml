@@ -1,8 +1,8 @@
-version: '3'
 services:
   janus:
-    image: webrtc
-    build: .
+    build: ./janus_webrtc
+    image: webrtc:latest
     ports:
-      - 8088:8088
-      - 8188:8188
+      - "8088:8088"
+      - "8188:8188"
+    command: ["/opt/janus/bin/janus"]

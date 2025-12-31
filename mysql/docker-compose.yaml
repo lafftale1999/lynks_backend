@@ -17,3 +17,6 @@ services:
         timeout: 3s
         retries: 30
       restart: unless-stopped
+
+volumes:
+  mysql_data:

@@ -1,10 +1,18 @@
+/**
+ * @author lafftal1999
+ * 
+ * @brief This header defines a collection of strongly-typed C++ message wrappers for interacting with the 
+ * Janus WebRTC REST API. It encapsulates the JSON request and response formats used when creating sessions
+ * attaching plugins, maintaining keep-alive traffic, and interacting with the VideoRoom plugin. The file is 
+ * organized into logical namespaces (session and video_room) that mirror Janus’s API structure. Each class 
+ * represents a single Janus message type and is responsible for either serializing C++ state into a valid 
+ * Janus JSON request or parsing a raw JSON response into structured, accessible fields.
+ */
+
 #ifndef JANUS_MESSAGES_HPP_
 #define JANUS_MESSAGES_HPP_
 
 #include "janus_common.hpp"
-
-// create session request
-// create session response
 
 namespace janus::messages {
     namespace session {

@@ -1,3 +1,9 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief Common headers used in the janus namespace.
+ */
+
 #ifndef JANUS_COMMON_INCLUDES_HPP_
 #define JANUS_COMMON_INCLUDES_HPP_
 

@@ -1,3 +1,15 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief This header defines janus::response_message, a lightweight value type representing a single event or 
+ * response delivered by Janus via long polling.
+ * 
+ * The class encapsulates the essential fields needed to route and process Janus messages: the event type,
+ * transaction identifier and the associated JSON payload. It provides helpers for parsing raw JSON strings
+ * into structured data, serializing messages back to JSON and producing human-readable output for logging
+ * and debugging.
+ */
+
 #ifndef JANUS_RESPONSE_MESSAGE_HPP_
 #define JANUS_RESPONSE_MESSAGE_HPP_
 

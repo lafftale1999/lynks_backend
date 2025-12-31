@@ -1,3 +1,15 @@
+/**
+ * @author lafftale1999
+ * 
+ * @brief This header defines janus::response_buffer, an asynchronous, coroutine-safe buffer used to 
+ * coordinate responses received from Janus’s long-polling REST API with the requests that initiated them. 
+ * 
+ * Janus may deliver responses asynchronously and out of order via long polling. response_buffer bridges 
+ * this gap by buffering incoming response_message objects and allowing coroutines to await a specific 
+ * response by transaction ID. Internally, it serializes access using an asio::strand and pairs waiting 
+ * coroutines with timers to support bounded waiting and timeouts.
+ */
+
 #ifndef JANUS_RESPONSE_BUFFER_HPP_
 #define JANUS_RESPONSE_BUFFER_HPP_
 
