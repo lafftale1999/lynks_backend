@@ -25,10 +25,8 @@ static uint16_t parse_port_or_default(const char* s, uint16_t def) {
 }
 
 int main(int argc, char** argv) {
-    // 1) PORT från ENV (default 60000)
     uint16_t port = parse_port_or_default(std::getenv("PORT"), 60000);
 
-    // 2) (valfritt) CLI-arg får överstyra om den skickas: lynks_backend 60000
     if (argc >= 2) {
         port = parse_port_or_default(argv[1], port);
     }

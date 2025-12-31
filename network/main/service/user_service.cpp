@@ -45,11 +45,10 @@ namespace lynks::network {
 
             janus::messages::video_room::user_create_video_response msg_response(janus_response->get_body());
 
-            std::cout << "[SERVICE] room_id: " << msg_response.get_room_id() << std::endl;
             co_return msg_response.to_json();
         }
         
-        std::cout << "Sessions invalid\n";
+        std::cerr << "[SERVICE] WARNING: Sessions invalid\n";
         co_return std::nullopt;
     }
 
@@ -57,19 +56,15 @@ namespace lynks::network {
         if (sessions.validate_session(token)) {
             auto username = sessions.get_username_by_token(token);
             if (!username) co_return std::nullopt;
-            
-            std::cout << "\n[DEBUG] username found\n";
 
             auto opt_user = co_await user_repo.find_user_by_username(*username);
             if (!opt_user) co_return std::nullopt;
-            std::cout << "\n[DEBUG] user found in database\n";
 
             auto janus_response = co_await janus_repo.list_participants(body);
             if (!janus_response) {
                 std::cerr << "[SERVICE] failed to get information from janus\n";
                 co_return std::nullopt;
             }
-            std::cout << "\n[DEBUG] retrieved response from participants\n";
 
             janus::messages::video_room::list_participants_response msg_response(janus_response->get_body());
             co_return msg_response.to_json();
@@ -77,11 +72,4 @@ namespace lynks::network {
 
         co_return std::nullopt;
     }
-    /* awaitable_opt_str user_service::join_session(const user& _user, const std::string& session_id) {
-
-    }
-
-    awaitable_opt_str user_service::end_session(const user& _user, const std::string& session_id) {
-
-    } */
 }

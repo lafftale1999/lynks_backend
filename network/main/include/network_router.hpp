@@ -21,10 +21,9 @@ namespace lynks {
             private:
                 asio::awaitable<http_response> route_request(const http_request& request) {
                     auto path = request.target();
+                    
+                    std::cout << "[ROUTER] request received to " << path << std::endl;
 
-                    std::cout << "\n\n---------------------------------- INCOMING REQUEST ----------------------------------------\n";
-                    std::cout << request;
-                    std::cout << "\n---------------------------------- INCOMING REQUEST ----------------------------------------\n\n";
                     if (path == "/login") {
                         co_return co_await login_user(request);
                     } else if (path == "/create") {
@@ -51,10 +50,8 @@ namespace lynks {
                     try {
                         std::cout << request << std::endl;
                         auto token = request.at(http::field::authorization);
-                        std::cout << "[ROUTER] token found: " << token << std::endl;
 
                         auto result_string = co_await _user_service.create_meeting(token);
-                        std::cout << "[ROUTER] meeting created: " << token << std::endl;
 
                         if (!result_string) co_return bad_request(request);
 
@@ -71,7 +68,6 @@ namespace lynks {
                         auto token = request.at(http::field::authorization);
                         auto result_string = co_await _user_service.list_participants(token, request.body());
                         if (!result_string) co_return bad_request(request);
-                        std::cout << "[DEBUG] body: " << *result_string << std::endl;
                         co_return succesful_request(request, *result_string);
                     } catch (const std::exception& e) {
                         std::cerr << "[ROUTER] list_participants failed: " << e.what() << std::endl;

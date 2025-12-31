@@ -178,6 +178,8 @@ Each client establishes separate WebRTC PeerConnections for publishing and subsc
 
 In this project, Janus is fully containerized and runs as an isolated service, making it easy to deploy, scale, and integrate with the REST API and MySQL-backed session logic.
 
+https://janus-legacy.conf.meetecho.com/docs/
+
 ## MySQL `/mysql`
 This project uses `MySQL 8.0` as a database. In the MVP we only store data for `users`.
 
@@ -391,5 +393,39 @@ Once the stack is running, the typical client flow looks like this:
 * Join the VideoRoom by connecting your WebRTC client directly to Janus and joining `room_id`.
 * Poll participants using `/list_participants` to discover active publishers and subscribe to their feeds.
 
+# Help
+
+## Known Bugs
+* Connections ends with read request failed. This is because they are closed when finished sending the request - so the socket hit End of stream and closes, as it should. 
+
+## Docker fresh start
+All the following commands must be made from the [`/root`](./) of the project.
+
+* Stop all containers related to this project, deletes all volumes, removes all related images and all earlier related containers.
+    ```sh
+    docker compose down -v --rmi all --remove-orphans
+    ```
+
+* Flushes the cache used with `docker build`.
+    ```sh
+    docker builder prune -af
+    ```
+
+* Removes stopped containers, unused networks and dangling images. Removes all images that isn't used by a container.
+    ```sh
+    docker system prune -af --volumes
+    ```
+
+* Builds the images used in the [`./docker-compose.yaml`](docker-compose.yaml) file without using the cache.
+    ```sh
+    docker compose build --no-cache
+    ```
+
+* Starts all the services in the [`./docker-compose.yaml`](docker-compose.yaml) and forces to create new containers even if nothing have changes.
+    ```sh
+    docker compose up --force-recreate
+    ```
+
 # Finishing thoughts
 This has been an incredibly fun project to work on. I have discovered the `Boost` library, which I have never used before and learned a lot more about coroutines and asynchronous programming. The goal for me was to learn more about C++, networking and creating a HTTP server. Further ahead I am also interested in trying to create a media-stream pipeline as well, but that is so far out of scope for this project.
+

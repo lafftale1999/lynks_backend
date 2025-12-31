@@ -34,10 +34,7 @@ namespace lynks::network {
         mysql::field_view const* params,
         std::size_t params_size
     ) {
-        #ifdef LYNKS_BACKEND_DEBUG 
-            debug_incoming_query(sql, params, params_size);
-        #endif
-
+        
         boost::system::error_code ec;
         auto token = asio::cancel_after(
             std::chrono::seconds(5),

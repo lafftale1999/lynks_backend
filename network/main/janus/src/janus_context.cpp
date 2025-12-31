@@ -110,13 +110,7 @@ namespace janus {
     asio::awaitable<std::optional<response_message>> janus::send_request(const http_request& request, const std::string& host, const uint16_t port) {
         auto result = co_await temporary_connection::send_request(context, request, host, port);
         if (!result) co_return std::nullopt;
-
-        std::cout << "\n-------- OUTGOING REQUEST --------\n";
-        std::cout << request;
-        std::cout << "\n-------- END --------\n";
-        
         response_message msg;
-        std::cout << *result;
 
         try {
             response_message tmp(result->body());
@@ -160,16 +154,12 @@ namespace janus {
             msg_request.to_json(),
             host, "/janus"
         );
-        std::cout << "----------- MESSAGE-------------\n";
-        std::cout << *request << std::endl;
-        std::cout << "----------- MESSAGE-------------\n";
 
         auto response = co_await send_request(*request, host, port);
         if (!response) {
             std::cerr << "[JANUS] failed to init session\n";
             co_return false; 
         }
-        std::cout << "[JANUS] create session response: " << *response;
 
         messages::session::create_session_response msg_response(response->get_body());
         session_path = msg_response.get_session_id();
@@ -191,10 +181,8 @@ namespace janus {
             co_return false;
         }
 
-        std::cout << "[JANUS] init videoroom response: " << *response;
         messages::session::attach_plugin_response msg_response(response->get_body());
         videoroom_path = msg_response.get_plugin_handle();
-        std::cout << "VIDEOPATH: " << videoroom_path << std::endl;
 
         co_return true;
     }
@@ -290,7 +278,7 @@ namespace janus {
     asio::awaitable<void> janus::read_long_poll_response() {
         boost::beast::error_code ec;
         auto token = asio::cancel_after(
-            std::chrono::seconds(30),
+            std::chrono::seconds(35),
             asio::redirect_error(asio::use_awaitable, ec)
         );
 
@@ -311,12 +299,8 @@ namespace janus {
 
             try {
                 messages::session::keep_alive_message is_keep_alive(long_temp_response.body());
-                std::cout << "[JANUS] keep alive received\n";
                 co_return;
             } catch (const std::exception& e) {}
-
-            std::cout << "[JANUS] response received:\n";
-            std::cout << long_temp_response;
 
             response_message msg(long_temp_response.body());
             co_await long_poll_buffer.push(msg);
