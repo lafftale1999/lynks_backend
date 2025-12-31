@@ -24,13 +24,7 @@ services:
     ports:
       - "8088:8088"
       - "8188:8188"
-      - "10000-11000:10000-11000/udp"
-    command: [
-      "/opt/janus/bin/janus",
-      "--nat-1-1=192.168.0.100",
-      "--rtp-port-range=10000-11000",
-      "--ice-enforce-list=eth0"
-    ]
+    command: ["/opt/janus/bin/janus"]
 
   lynks_backend:
     build:

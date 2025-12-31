@@ -103,11 +103,9 @@ namespace lynks {
                         asio::co_spawn(
                             context,
                             [this, client_keepalive, _request]() -> asio::awaitable<void> {
-                                std::cout << "\n------- (START) REQUEST -------\n";
                                 http_response raw_response = co_await router.handle_request(_request);
                                 message_handle<http_response> response{raw_response};
                                 client_keepalive->send_response(response);
-                                std::cout << "\n------- (END) REQUEST -------\n";
                                 co_return;
                             },
                             [client_keepalive](std::exception_ptr ptr){

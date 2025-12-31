@@ -22,14 +22,15 @@ namespace lynks {
                 asio::awaitable<http_response> route_request(const http_request& request) {
                     auto path = request.target();
 
+                    std::cout << "\n\n---------------------------------- INCOMING REQUEST ----------------------------------------\n";
+                    std::cout << request;
+                    std::cout << "\n---------------------------------- INCOMING REQUEST ----------------------------------------\n\n";
                     if (path == "/login") {
                         co_return co_await login_user(request);
                     } else if (path == "/create") {
                         co_return co_await create_meeting(request);
                     } else if (path == "/list_participants") {
                         co_return co_await list_participants(request);
-                    } else if (path == "/leave") {
-
                     } else {
                         std::cout << "[ROUTER] unexpected path received: " << request.target() << std::endl;
                     }
