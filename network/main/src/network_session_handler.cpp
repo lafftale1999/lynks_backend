@@ -38,7 +38,7 @@ namespace lynks::network {
             }
         }
 
-        std::cerr << "[SERVER] max_sessions hit\n";
+        std::cerr << "[SERVER] max_sessions hit" << std::endl;
         clean_inactive_sessions();
         return std::nullopt;
     }

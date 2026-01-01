@@ -28,7 +28,7 @@ namespace lynks::network {
             validate_user();
         } catch (const std::exception& e) {
             std::cerr << 
-                "[SERVER] unable to parse incoming json to object:\n" <<
+                "[SERVER] unable to parse incoming json to object:" << std::endl <<
                 json_string << std::endl <<
                 "Error: " << e.what() << std::endl;
         }

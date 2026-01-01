@@ -106,8 +106,13 @@ namespace lynks {
                     [this](boost::beast::error_code ec, std::size_t length){
                         if (!ec) {
                             add_to_incoming_requests();
-                        } else {
-                            std::cout << "[" << id << "] read request failed\n";
+                        } else if (ec == boost::beast::http::error::end_of_stream) {
+                            std::cout << "[" << id << "]" << " connection closed: " << ec.message() << std::endl;
+                            socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+                            socket.close();
+                        }
+                        else {
+                            std::cout << "[" << id << "] read request failed" << std::endl;
                             std::cerr << ec.message() << std::endl;
                             socket.shutdown(asio::ip::tcp::socket::shutdown_both);
                             socket.close();
@@ -140,7 +145,7 @@ namespace lynks {
 
                             if (!responses.is_empty()) write_response();
                         } else {
-                            std::cout << "[" << id << "] failed to write response\n";
+                            std::cout << "[" << id << "] failed to write response" << std::endl;
                             std::cerr << "Error message: " << ec.message() << std::endl;
                             socket.close();
                         }

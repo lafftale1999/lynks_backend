@@ -43,7 +43,7 @@ namespace lynks {
                         return false;
                     }
 
-                    std::cout << "[SERVER] started\n";
+                    std::cout << "[SERVER] started" << std::endl;
                     return true;
                 }
 
@@ -51,7 +51,7 @@ namespace lynks {
                     context.stop();
                     if (context_thread.joinable()) context_thread.join();
 
-                    std::cout << "[SERVER] stopped\n";
+                    std::cout << "[SERVER] stopped" << std::endl;
                     return true;
                 }
 
@@ -70,9 +70,9 @@ namespace lynks {
                                 if (on_client_connect(new_connect)) {
                                     connected_clients.push_back(std::move(new_connect));
                                     connected_clients.back()->connect_to_client(id_counter++);
-                                    std::cout << "[" << connected_clients.back()->get_id() << "] has connected succesfully\n";
+                                    std::cout << "[" << connected_clients.back()->get_id() << "] has connected succesfully" << std::endl;
                                 } else {
-                                    std::cerr << "[SERVER] connection denied\n";
+                                    std::cerr << "[SERVER] connection denied" << std::endl;
                                 }
                             } else {
                                 std::cerr << "[SERVER] New connection error: " << ec.message() << std::endl;

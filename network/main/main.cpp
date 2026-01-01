@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
     lynks_server server(port);
 
     if (!server.start()) {
-        std::cerr << "Unable to start server on port " << port << "\n";
+        std::cerr << "Unable to start server on port " << port << std::endl;
         return 1;
     }
 

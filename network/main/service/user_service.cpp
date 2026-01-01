@@ -39,7 +39,7 @@ namespace lynks::network {
 
             auto janus_response = co_await janus_repo.create_video_meeting();
             if (!janus_response) {
-                std::cerr << "[SERVICE] failed get information from janus\n";
+                std::cerr << "[SERVICE] failed get information from janus" << std::endl;
                 co_return std::nullopt;
             }
 
@@ -48,7 +48,7 @@ namespace lynks::network {
             co_return msg_response.to_json();
         }
         
-        std::cerr << "[SERVICE] WARNING: Sessions invalid\n";
+        std::cerr << "[SERVICE] WARNING: Sessions invalid" << std::endl;
         co_return std::nullopt;
     }
 
@@ -62,7 +62,7 @@ namespace lynks::network {
 
             auto janus_response = co_await janus_repo.list_participants(body);
             if (!janus_response) {
-                std::cerr << "[SERVICE] failed to get information from janus\n";
+                std::cerr << "[SERVICE] failed to get information from janus" << std::endl;
                 co_return std::nullopt;
             }
 

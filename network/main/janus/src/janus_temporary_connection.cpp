@@ -26,13 +26,6 @@ namespace janus {
 
     asio::awaitable<bool> temporary_connection::connect_to_server() {
 
-        /* auto ex = co_await asio::this_coro::executor;
-
-        if (ex != context.get_executor()) {
-            std::cerr << "[JANUS] BUG: coroutine is not running on janus context executor\n";
-            co_return false;
-        } */
-
         // Error handling
         boost::system::error_code ec;
         auto token = asio::cancel_after(

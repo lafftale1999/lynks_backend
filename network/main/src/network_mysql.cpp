@@ -73,7 +73,7 @@ namespace lynks::network {
             co_return std::nullopt;
         }
 
-        std::cout << "[SERVER] Query Executed\n";
+        std::cout << "[SERVER] Query Executed" << std::endl;
 
         co_return result;
     }
@@ -130,14 +130,14 @@ namespace lynks::network {
         mysql::field_view const* params,
         std::size_t params_size
     ) {
-        std::cout << "Incoming arguments:\n";
+        std::cout << "Incoming arguments:" << std::endl;
         std::cout << "SQL: " << sql << std::endl;
-        std::cout << "Params (" << params_size << "):\n";
+        std::cout << "Params (" << params_size << "):" << std::endl;
         
         for (std::size_t i = 0; i < params_size; ++i) {
             std::cout << "  [" << i << "] = ";
             print_field(params[i]);
-            std::cout << "\n";
+            std::cout << "" << std::endl;
         }
     }
 }

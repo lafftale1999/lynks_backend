@@ -15,15 +15,15 @@ namespace janus {
         work_guard(asio::make_work_guard(context)),
         rnd(0, -1)
     {
-        context_thread = std::thread([this]{
-            context.run();
-        });
-
         asio::co_spawn(
             context,
             start(),
             asio::detached
         );
+
+        context_thread = std::thread([this]{
+            context.run();
+        });
     }
 
 
@@ -51,25 +51,25 @@ namespace janus {
     asio::awaitable<void> janus::start() {
         auto connected = co_await connect();
         if (!connected) {
-            std::cerr << "[JANUS] failed to connect\n";
+            std::cerr << "[JANUS] failed to connect" << std::endl;
             stop();
             co_return;
         }
 
         auto inited = co_await init();
         if (!inited) {
-            std::cerr << "[JANUS] failed to init\n";
+            std::cerr << "[JANUS] failed to init" << std::endl;
             stop();
             co_return;
         }
+
+        std::cout << "[JANUS] successfully initialized!" << std::endl;
 
         asio::co_spawn(
             context,
             long_poll_task(),
             asio::detached
         );
-        
-        std::cout << "[JANUS] successfully initialized!\n";
     }
 
     /**
@@ -117,7 +117,7 @@ namespace janus {
             msg = std::move(tmp);
 
         } catch (const std::exception& e) {
-            std::cerr << "[JANUS] failed to parse message\n";
+            std::cerr << "[JANUS] failed to parse message" << std::endl;
             co_return std::nullopt;
         }
         
@@ -126,7 +126,7 @@ namespace janus {
          * our request will be sent to the long_poll_buffer instead.
          */
         if (msg.get_event_type() == "ack") {
-            std::cout << "[JANUS] ack receiver\n";
+            std::cout << "[JANUS] ack receiver" << std::endl;
             co_return co_await long_poll_buffer.wait_for_transaction(msg.get_transaction());
         }
 
@@ -157,7 +157,7 @@ namespace janus {
 
         auto response = co_await send_request(*request, host, port);
         if (!response) {
-            std::cerr << "[JANUS] failed to init session\n";
+            std::cerr << "[JANUS] failed to init session" << std::endl;
             co_return false; 
         }
 
@@ -177,15 +177,13 @@ namespace janus {
 
         auto response = co_await send_request(*request, host, port);
         if (!response) {
-            std::cerr << "[JANUS] failed to init videoroom\n";
+            std::cerr << "[JANUS] failed to init videoroom" << std::endl;
             co_return false;
         }
 
         messages::session::attach_plugin_response msg_response(response->get_body());
         videoroom_path = msg_response.get_plugin_handle();
 
-        std::cout << "[JANUS] successfully initialized Janus-connection\n";
-        
         co_return true;
     }
 
@@ -242,7 +240,7 @@ namespace janus {
      */
     asio::awaitable<void> janus::send_long_poll_request() {
         if (session_path.empty()) {
-            std::cout << "[JANUS] session_path not initialized properly\n";
+            std::cout << "[JANUS] session_path not initialized properly" << std::endl;
             co_return;
         }
         auto request = request_mapper::get_request(

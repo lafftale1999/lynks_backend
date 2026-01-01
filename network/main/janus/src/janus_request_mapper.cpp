@@ -22,7 +22,7 @@ namespace janus {
         auto it = _request_map.find(request_type);
 
         if (it == _request_map.end()) {
-            std::cerr << "[JANUS] invalid request type\n";
+            std::cerr << "[JANUS] invalid request type" << std::endl;
             return std::nullopt;
         }
 
