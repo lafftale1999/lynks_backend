@@ -91,6 +91,7 @@ namespace janus::messages {
                 std::string request;
                 bool is_private;
                 std::string transaction;
+                uint64_t room_id;
         };
 
         class create_room_response {

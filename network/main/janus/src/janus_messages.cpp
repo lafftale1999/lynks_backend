@@ -138,7 +138,7 @@ namespace janus::messages {
          */
     
         create_room_request::create_room_request()
-        : janus("message"), request("create"), is_private(false), transaction("test123") {}
+        : janus("message"), request("create"), is_private(false), transaction("test123"), room_id(123456) {}
 
         std::string create_room_request::to_json() const {
             nlohmann::json json;
@@ -147,6 +147,7 @@ namespace janus::messages {
             json["transaction"] = transaction;
             json["body"]["request"] = request; 
             json["body"]["is_private"] = is_private;
+            json["body"]["room"] = room_id;
 
             return json.dump();
         }

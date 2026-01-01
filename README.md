@@ -116,9 +116,9 @@ This accepts an empty `json{}` as body. This is a session-based endpoint, which 
 
 * **Expected response if succesful:**
     ```json
-    {"action": "success", "room_id": 1826155723263531}
+    {"action": "success", "room_id": 123456}
     ```
-    *This is only an example, the "room_id" here is not valid by standard and must be generated during the session*
+    *For this project, I have assigned 123456 as the standard room to be created.*
 
 ---
 
@@ -135,7 +135,7 @@ Takes a `json{}` as body and uses the `room_id` to retrieve the current publishi
 
 * **Expected body:**
     ```json
-    {"room_id": 1598697797112336}
+    {"room_id": 123456}
     ```
     *This is only an example, the "room_id" here is not valid by standard and must be generated during the session by using `/create`*
 
@@ -143,7 +143,7 @@ Takes a `json{}` as body and uses the `room_id` to retrieve the current publishi
     ```json
     {
         "action": "success", 
-        "room_id": 5401647200881151,
+        "room_id": 123456,
         "publishers": [1111, 2222, 3333]
     }
     ```
